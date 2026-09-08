@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Trợ Lý Cuộc Họp & Tài Liệu - Bệnh viện ĐKKV Cầu Ngang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen py-6 px-3 sm:px-6 flex justify-center items-start text-slate-800">
+
+    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
+
+        <!-- Header & Huy hiệu trạng thái -->
+        <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-6">
+            <div class="flex items-center gap-3.5">
+                <div
+                    class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-md">
+                    🏛️
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900">AI Trợ Lý Cuộc Họp & Văn Bản</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Bệnh viện ĐKKV Cầu Ngang • Tự Động Phân
+                        Tích & Soạn Thảo Văn Bản</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openSpeakerModal()"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition">
+                    <span>👥</span> Danh Bạ Giọng (<span id="speakerCountBadge">0</span>)
+                </button>
+
+                <!-- Huy hiệu hiển thị trạng thái kết nối & mô hình Ollama -->
+                <span id="aiModelBadge"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 transition">
+                    <span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>
+                    Đang kiểm tra AI...
+                </span>
+            </div>
+        </div>
+
+        <!-- Địa chỉ trạm AI (cố định ngầm) -->
+        <input type="hidden" id="apiUrl" value="https://api-ai.benhviencaungang.com">
+
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 mb-6 space-y-3">
+            <div class="flex items-center justify-between">
+                <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <span class="text-rose-500">🎙️</span> Ghi âm trực tiếp tại cuộc họp:
+                </label>
+                <div id="recordingStatus" class="hidden items-center gap-2 text-xs font-semibold text-rose-600">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                    <span id="recordingTimer">00:00</span> (Đang ghi âm...)
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+                <button type="button" id="btnStartRecord" onclick="toggleRecording()"
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition">
+                    <span id="recordBtnIcon">⏺️</span>
+                    <span id="recordBtnText">Bắt đầu ghi âm phát biểu</span>
+                </button>
+                <span class="text-xs text-slate-500 text-center sm:text-left">
+                    Tự động nhận diện vân giọng diễn giả và gán nhãn người phát biểu sau khi bấm dừng.
+                </span>
+            </div>
+
+            <!-- Thẻ nhận diện giọng nói vừa thu -->
+            <div id="speakerIdentifyBox"
+                class="hidden p-3 bg-white rounded-xl border border-indigo-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-sm">
+                <div class="flex items-center gap-2.5 text-xs text-slate-800">
+                    <span id="speakerIdentifyIcon" class="text-lg">⏳</span>
+                    <div>
+                        <div id="speakerIdentifyTitle" class="font-bold text-slate-900">Đang nhận diện giọng...</div>
+                        <div id="speakerIdentifySubtitle" class="text-slate-500 text-[11px]">Đang đối chiếu vân giọng
+                            với Supabase</div>
+                    </div>
+                </div>
+                <!-- Khung đặt tên nhanh cho giọng nói mới -->
+                <div id="quickEnrollForm" class="hidden flex items-center gap-2 w-full sm:w-auto">
+                    <input type="text" id="newSpeakerName" placeholder="Tên người nói (VD: GĐ Tuấn)"
+                        class="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-indigo-500 w-full sm:w-48">
+                    <button onclick="enrollLatestAudio()"
+                        class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold whitespace-nowrap transition">
+                        💾 Ghi nhớ giọng
+                    </button>
+                </div>
+            </div>
+
+            <!-- Trình nghe lại đoạn ghi âm vừa thu -->
+            <div id="audioPreviewContainer" class="hidden pt-2 border-t border-slate-200 items-center gap-3">
+                <audio id="audioPreview" controls class="h-9 w-full max-w-md rounded-lg"></audio>
+                <span class="text-xs text-emerald-600 font-semibold flex items-center gap-1">
+                    ✓ Đã đưa vào danh sách tệp chờ xử lý
+                </span>
+            </div>
+        </div>
+
+        <div class="space-y-4 mb-6">
+            <div class="flex items-center justify-between">
+                <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <span>📂</span> Nạp tài liệu & bản ghi âm (Hỗ trợ nạp nhiều tệp cùng lúc):
+                </label>
+                <span id="selectedCountText" class="text-xs text-slate-500 font-medium">Đã chọn 0 tệp</span>
+            </div>
+
+            <div id="dropzone"
+                class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-6 text-center transition bg-slate-50/70 cursor-pointer"
+                onclick="document.getElementById('multiFileInput').click()" ondragover="handleDragOver(event)"
+                ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+
+                <input type="file" id="multiFileInput" multiple accept="audio/*,video/*,.pdf,.docx,.doc,.pptx,.ppt,.txt"
+                    class="hidden" onchange="handleFilesSelected(event)">
+
+                <div class="space-y-2">
+                    <div class="text-4xl">📥</div>
+                    <div class="text-sm font-semibold text-slate-700">
+                        Kéo thả nhiều file vào đây hoặc <span class="text-blue-600 underline">bấm để duyệt</span>
+                    </div>
+                    <p class="text-xs text-slate-500">
+                        Hỗ trợ nạp cùng lúc file âm thanh cuộc họp (.mp3, .wav, .m4a), slide (.pptx), tài liệu (.pdf,
+                        .docx, .txt)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Danh sách file đã chọn -->
+            <div id="fileListContainer" class="hidden space-y-2 max-h-48 overflow-y-auto custom-scrollbar p-1"></div>
+        </div>
+
+        <div class="bg-blue-50/60 border border-blue-200 rounded-2xl p-4 mb-6 space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
+                <span>🧠</span> Câu hỏi hoặc yêu cầu cho AI (Tùy chọn):
+            </label>
+            <input type="text" id="customPrompt"
+                placeholder="Ví dụ: Văn bản này nói về vấn đề gì? Tóm tắt các tiêu chí cốt lõi? Cuộc họp thống nhất những việc gì?"
+                class="w-full p-3 bg-white border border-blue-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm placeholder:text-slate-400">
+            <div class="flex flex-wrap gap-2 pt-1 text-xs text-slate-600">
+                <span class="font-semibold text-slate-500">Gợi ý câu hỏi:</span>
+                <button type="button" onclick="setPrompt(this.innerText)"
+                    class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Văn
+                    bản này nói về vấn đề gì và những điểm chính cần lưu ý?</button>
+                <button type="button" onclick="setPrompt(this.innerText)"
+                    class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Tóm
+                    tắt các quyết định quan trọng nhất trong cuộc họp</button>
+            </div>
+        </div>
+
+        <!-- Nút kích hoạt bóc tách và phân tích -->
+        <button id="btnProcess" onclick="processAllFiles()"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.99] flex justify-center items-center gap-2 text-sm sm:text-base">
+            <span>⚡ Bắt Đầu Xử Lý Đa Tệp & Phân Tích Nội Dung</span>
+        </button>
+
+        <!-- Thẻ thông báo trạng thái xử lý -->
+        <div id="statusCard"
+            class="hidden mt-6 p-4 rounded-xl text-sm font-medium flex items-center justify-between transition-all">
+            <div class="flex items-center gap-3">
+                <div id="statusSpinner"
+                    class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                <span id="statusText">Đang xử lý dữ liệu...</span>
+            </div>
+        </div>
+
+        <div id="directiveCard"
+            class="hidden mt-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 rounded-2xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center gap-2 text-amber-800 font-bold text-sm sm:text-base">
+                <span class="text-xl">🔔</span> Phát hiện Mệnh Lệnh / Chỉ Đạo Cuộc Họp:
+            </div>
+            <p id="directiveDesc" class="text-xs sm:text-sm text-amber-900 leading-relaxed"></p>
+            <div class="flex flex-wrap gap-2.5 pt-1" id="directiveActions"></div>
+        </div>
+
+        <!-- Khung hiển thị văn bản hành chính tự động tạo -->
+        <div id="officialDocCard"
+            class="hidden mt-6 bg-slate-900 text-slate-100 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+            <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span
+                        class="px-2.5 py-1 bg-blue-500/20 text-blue-300 rounded text-xs font-bold uppercase tracking-wider">
+                        📄 Văn bản hành chính chuẩn thể thức
+                    </span>
+                    <span id="docTitleBadge" class="text-xs text-slate-400 font-medium">Biên bản / Công văn</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="copyOfficialDoc()"
+                        class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1">
+                        📋 Sao chép
+                    </button>
+                    <button onclick="downloadOfficialDoc()"
+                        class="text-xs font-semibold text-blue-400 hover:text-blue-300 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1">
+                        💾 Tải file .doc
+                    </button>
+                </div>
+            </div>
+            <textarea id="officialDocContent" rows="15"
+                class="w-full bg-slate-950 text-slate-100 font-mono text-xs sm:text-sm p-4 rounded-xl border border-slate-800 outline-none focus:ring-1 focus:ring-blue-500 leading-relaxed custom-scrollbar"></textarea>
+        </div>
+
+        <div id="resultCard"
+            class="hidden mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-inner space-y-4">
+
+            <!-- Phần phân tích trả lời câu hỏi của người dùng -->
+            <div id="analysisSection"
+                class="hidden bg-white p-4 sm:p-5 rounded-xl border border-blue-200 shadow-sm space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2 text-blue-700 font-bold text-xs uppercase tracking-wider">
+                        <span>🤖</span> Kết quả AI Đọc & Phân Tích Tài Liệu:
+                    </div>
+                    <span id="analysisModelSource" class="text-[11px] font-semibold text-slate-400"></span>
+                </div>
+                <div id="analysisContent" class="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap font-sans">
+                </div>
+            </div>
+
+            <!-- Tổng hợp nội dung các tệp -->
+            <div class="flex flex-wrap justify-between items-center gap-2 pt-2 border-t border-slate-200">
+                <div class="flex items-center gap-2">
+                    <span
+                        class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-slate-200 text-slate-700">
+                        Nội dung tổng hợp từ các tệp
+                    </span>
+                    <span id="summaryWordCount" class="text-xs text-slate-500 font-medium">0 từ</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="copyTotalTranscript()"
+                        class="text-xs font-semibold text-blue-600 hover:text-blue-800 px-2.5 py-1 rounded hover:bg-blue-50 transition">
+                        📋 Sao chép tất cả
+                    </button>
+                    <button onclick="downloadTotalTranscript()"
+                        class="text-xs font-semibold text-slate-600 hover:text-slate-800 px-2.5 py-1 rounded hover:bg-slate-200 transition">
+                        💾 Tải file .txt
+                    </button>
+                </div>
+            </div>
+
+            <div id="totalTranscriptContent"
+                class="text-slate-800 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto custom-scrollbar p-3 bg-white rounded-xl border border-slate-200 shadow-sm font-mono">
+            </div>
+
+            <!-- Công cụ chủ động tạo văn bản -->
+            <div class="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs text-slate-500 font-medium">Chuyển nội dung trên thành văn bản hành chính:</span>
+                <div class="flex gap-2">
+                    <button onclick="requestDocument('bien_ban')"
+                        class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold transition">
+                        📝 Tạo Biên Bản Họp
+                    </button>
+                    <button onclick="requestDocument('cong_van')"
+                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition">
+                        🏛️ Tạo Công Văn Trình GĐ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hộp thoại thông báo tùy biến (thay cho alert) -->
+        <div id="customModal"
+            class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+            <div
+                class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 text-center space-y-4">
+                <div id="modalIcon"
+                    class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mx-auto">
+                    ℹ️
+                </div>
+                <h3 id="modalTitle" class="text-base font-bold text-slate-800">Thông báo</h3>
+                <p id="modalMessage" class="text-sm text-slate-600 leading-relaxed"></p>
+                <button onclick="closeModal()"
+                    class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl transition">
+                    Đã hiểu
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Quản Lý Danh Bạ Giọng Nói Diễn Giả -->
+        <div id="speakerModal"
+            class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span>👥</span> Danh Bạ Mẫu Giọng Diễn Giả
+                    </h3>
+                    <button onclick="closeSpeakerModal()"
+                        class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                </div>
+
+                <p class="text-xs text-slate-500">
+                    Hệ thống tự động trích xuất vân giọng đặc trưng và lưu an toàn trên Supabase để tự động nhận dạng
+                    tên người phát biểu trong các cuộc họp sau.
+                </p>
+
+                <div id="speakerList" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-1">
+                    <div class="text-center text-xs text-slate-400 py-4">Đang nạp danh sách...</div>
+                </div>
+
+                <button onclick="closeSpeakerModal()"
+                    class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition">
+                    Đóng
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let selectedFiles = [];
+        let combinedMeetingText = "";
+
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordInterval = null;
+        let recordSeconds = 0;
+        let latestRecordedBlob = null;
+        let latestRecordedFile = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSpeakerList();
+            checkAiModelConnection();
+        });
+
+        // 1. Kiểm tra trạng thái Ollama và mô hình đang đồng bộ
+        async function checkAiModelConnection() {
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            const badge = document.getElementById('aiModelBadge');
+
+            try {
+                const res = await fetch(`${baseApi}/ai/model-status`);
+                const data = await res.json();
+
+                if (data.ollama_online) {
+                    badge.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 transition";
+                    badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> AI Não Bộ: ${data.synced_model}`;
+                } else {
+                    badge.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200 transition";
+                    badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> AI Dự phòng (Ollama chưa bật)`;
+                }
+            } catch (err) {
+                badge.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200 transition";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-rose-500"></span> Mất kết nối Trạm AI`;
+            }
+        }
+
+        // 2. Tải danh sách diễn giả từ Supabase
+        async function loadSpeakerList() {
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            try {
+                const res = await fetch(`${baseApi}/speaker/list`);
+                const data = await res.json();
+                const countBadge = document.getElementById('speakerCountBadge');
+                const listEl = document.getElementById('speakerList');
+
+                if (data.speakers && data.speakers.length > 0) {
+                    countBadge.innerText = data.speakers.length;
+                    listEl.innerHTML = data.speakers.map(s => `
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                            <div>
+                                <div class="font-bold text-slate-800">🎙️ ${s.name}</div>
+                                <div class="text-[11px] text-slate-400">${s.role || 'Thành viên cuộc họp'} • Đã lưu vân giọng</div>
+                            </div>
+                            <button onclick="deleteSpeaker(${s.id})" class="text-rose-500 hover:text-rose-700 px-2 py-1 rounded hover:bg-rose-50 font-semibold transition">
+                                Xóa
+                            </button>
+                        </div>
+                    `).join('');
+                } else {
+                    countBadge.innerText = '0';
+                    listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-6">Chưa có mẫu giọng nào được lưu. Hãy thu âm và đặt tên cho người phát biểu.</div>`;
+                }
+            } catch (err) {
+                console.error("Lỗi nạp danh bạ giọng:", err);
+            }
+        }
+
+        async function deleteSpeaker(id) {
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            try {
+                await fetch(`${baseApi}/speaker/${id}`, {method: 'DELETE'});
+                showNotification('Đã xóa', 'Đã xóa mẫu giọng khỏi hệ thống.', '🗑️', 'bg-rose-100', 'text-rose-600');
+                loadSpeakerList();
+            } catch (e) {
+                showNotification('Lỗi', 'Không thể xóa mẫu giọng: ' + e.message, '⚠️', 'bg-amber-100', 'text-amber-600');
+            }
+        }
+
+        function openSpeakerModal() {
+            loadSpeakerList();
+            document.getElementById('speakerModal').classList.remove('hidden');
+        }
+
+        function closeSpeakerModal() {
+            document.getElementById('speakerModal').classList.add('hidden');
+        }
+
+        // 3. Logic Ghi âm trực tiếp
+        async function toggleRecording() {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                recordSeconds = 0;
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    clearInterval(recordInterval);
+                    const mimeType = mediaRecorder.mimeType || 'audio/webm';
+                    const ext = mimeType.includes('mp4') ? 'm4a' : (mimeType.includes('ogg') ? 'ogg' : 'webm');
+                    latestRecordedBlob = new Blob(audioChunks, {type: mimeType});
+
+                    const now = new Date();
+                    const timeStr = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+                    const fileName = `Ghi_am_truc_tiep_${timeStr}.${ext}`;
+                    latestRecordedFile = new File([latestRecordedBlob], fileName, {type: mimeType});
+
+                    addFiles([latestRecordedFile]);
+
+                    const audioEl = document.getElementById('audioPreview');
+                    audioEl.src = URL.createObjectURL(latestRecordedBlob);
+                    document.getElementById('audioPreviewContainer').classList.remove('hidden');
+                    document.getElementById('audioPreviewContainer').classList.add('flex');
+
+                    stream.getTracks().forEach(track => track.stop());
+
+                    document.getElementById('recordBtnText').innerText = "Bắt đầu ghi âm phát biểu";
+                    document.getElementById('recordBtnIcon').innerText = "⏺️";
+                    document.getElementById('btnStartRecord').className = "w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition";
+                    document.getElementById('recordingStatus').classList.add('hidden');
+                    document.getElementById('recordingStatus').classList.remove('flex');
+
+                    // Nhận diện giọng nói ngay khi vừa thu âm xong
+                    identifyRecordedSpeaker(latestRecordedFile);
+                };
+
+                mediaRecorder.start(250);
+
+                document.getElementById('recordBtnText').innerText = "Dừng & Lưu đoạn ghi âm";
+                document.getElementById('recordBtnIcon').innerText = "⏹️";
+                document.getElementById('btnStartRecord').className = "w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition animate-pulse";
+                document.getElementById('recordingStatus').classList.remove('hidden');
+                document.getElementById('recordingStatus').classList.add('flex');
+
+                recordInterval = setInterval(() => {
+                    recordSeconds++;
+                    const mins = Math.floor(recordSeconds / 60).toString().padStart(2, '0');
+                    const secs = (recordSeconds % 60).toString().padStart(2, '0');
+                    document.getElementById('recordingTimer').innerText = `${mins}:${secs}`;
+                }, 1000);
+
+            } catch (err) {
+                console.error(err);
+                showNotification('Không truy cập được Micro', 'Vui lòng cho phép trình duyệt truy cập micro để ghi âm trực tiếp.', '⚠️', 'bg-amber-100', 'text-amber-600');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+            }
+        }
+
+        // 4. Nhận diện giọng nói đã lưu hoặc đề xuất đặt tên
+        async function identifyRecordedSpeaker(file) {
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            const box = document.getElementById('speakerIdentifyBox');
+            const title = document.getElementById('speakerIdentifyTitle');
+            const sub = document.getElementById('speakerIdentifySubtitle');
+            const icon = document.getElementById('speakerIdentifyIcon');
+            const form = document.getElementById('quickEnrollForm');
+
+            box.classList.remove('hidden');
+            form.classList.add('hidden');
+            title.innerText = "Đang phân tích vân giọng...";
+            sub.innerText = "So khớp với danh sách diễn giả trên Supabase";
+            icon.innerText = "⏳";
+
+            const fd = new FormData();
+            fd.append('file', file);
+
+            try {
+                const res = await fetch(`${baseApi}/speaker/identify`, {method: 'POST', body: fd});
+                const data = await res.json();
+
+                if (data.identified && data.speaker) {
+                    icon.innerText = "✅";
+                    title.innerHTML = `Đã nhận diện: <span class="text-indigo-700 font-bold">${data.speaker.name}</span>`;
+                    sub.innerText = `Độ trùng khớp: ${data.speaker.similarity}% • Tự động gắn nhãn vào biên bản`;
+                } else {
+                    icon.innerText = "👤";
+                    title.innerText = "Phát hiện giọng nói mới chưa lưu danh tính";
+                    sub.innerText = "Nhập tên để AI ghi nhớ giọng cho tất cả cuộc họp sau";
+                    form.classList.remove('hidden');
+                }
+            } catch (e) {
+                box.classList.add('hidden');
+            }
+        }
+
+        async function enrollLatestAudio() {
+            const nameInput = document.getElementById('newSpeakerName');
+            const name = nameInput.value.trim();
+            if (!name) {
+                showNotification('Chưa nhập tên', 'Vui lòng nhập tên người phát biểu.', '⚠️', 'bg-amber-100', 'text-amber-600');
+                return;
+            }
+
+            if (!latestRecordedFile) {
+                showNotification('Lỗi', 'Không tìm thấy đoạn ghi âm vừa thu.', '⚠️', 'bg-amber-100', 'text-amber-600');
+                return;
+            }
+
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            const fd = new FormData();
+            fd.append('name', name);
+            fd.append('file', latestRecordedFile);
+
+            try {
+                const res = await fetch(`${baseApi}/speaker/enroll`, {method: 'POST', body: fd});
+                const data = await res.json();
+
+                if (res.ok) {
+                    showNotification('Đã lưu vân giọng', `Từ nay AI sẽ tự nhận diện tiếng nói của: ${name}`, '🎉', 'bg-emerald-100', 'text-emerald-700');
+                    document.getElementById('speakerIdentifyTitle').innerHTML = `Đã nhận diện: <span class="text-indigo-700 font-bold">${name}</span>`;
+                    document.getElementById('speakerIdentifySubtitle').innerText = `Mẫu giọng đã được lưu an toàn vào Supabase`;
+                    document.getElementById('quickEnrollForm').classList.add('hidden');
+                    nameInput.value = '';
+                    loadSpeakerList();
+                } else {
+                    throw new Error(data.detail || "Không thể lưu mẫu giọng");
+                }
+            } catch (err) {
+                showNotification('Lỗi', err.message, '❌', 'bg-rose-100', 'text-rose-600');
+            }
+        }
+
+        // 5. Xử lý tập tin kéo thả / duyệt
+        function setPrompt(text) {
+            document.getElementById('customPrompt').value = text;
+        }
+
+        function handleFilesSelected(e) {
+            const files = Array.from(e.target.files);
+            addFiles(files);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('dropzone').classList.add('border-blue-500', 'bg-blue-50/50');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            document.getElementById('dropzone').classList.remove('border-blue-500', 'bg-blue-50/50');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('dropzone').classList.remove('border-blue-500', 'bg-blue-50/50');
+            if (e.dataTransfer.files) {
+                addFiles(Array.from(e.dataTransfer.files));
+            }
+        }
+
+        function addFiles(files) {
+            selectedFiles = [...selectedFiles, ...files];
+            renderFileList();
+        }
+
+        function removeFile(index, event) {
+            if (event) event.stopPropagation();
+            selectedFiles.splice(index, 1);
+            renderFileList();
+        }
+
+        function renderFileList() {
+            const container = document.getElementById('fileListContainer');
+            const countText = document.getElementById('selectedCountText');
+            countText.innerText = `Đã chọn ${selectedFiles.length} tệp`;
+
+            if (selectedFiles.length === 0) {
+                container.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            container.classList.remove('hidden');
+            container.innerHTML = selectedFiles.map((file, idx) => {
+                const ext = file.name.split('.').pop().toLowerCase();
+                const icon = ['mp3', 'wav', 'm4a', 'webm', 'ogg'].includes(ext) ? '🎙️' : (ext === 'pdf' ? '📄' : (['docx', 'doc'].includes(ext) ? '📝' : (['pptx', 'ppt'].includes(ext) ? '📊' : '📃')));
+                return `
+                    <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            <span>${icon}</span>
+                            <span class="font-medium text-slate-800 truncate">${file.name}</span>
+                            <span class="text-slate-400">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                        </div>
+                        <button type="button" onclick="removeFile(${idx}, event)" class="text-red-500 hover:text-red-700 font-semibold px-2 py-1 rounded hover:bg-red-50">
+                            Xóa
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function setStatus(type, message, showSpinner = false) {
+            const card = document.getElementById('statusCard');
+            const text = document.getElementById('statusText');
+            const spinner = document.getElementById('statusSpinner');
+
+            card.classList.remove('hidden', 'bg-blue-50', 'text-blue-800', 'border-blue-200',
+                'bg-emerald-50', 'text-emerald-800', 'border-emerald-200',
+                'bg-rose-50', 'text-rose-800', 'border-rose-200', 'border');
+
+            if (type === 'loading') card.classList.add('bg-blue-50', 'text-blue-800', 'border', 'border-blue-200');
+            if (type === 'success') card.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+            if (type === 'error') card.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+
+            text.innerText = message;
+            if (showSpinner) spinner.classList.remove('hidden'); else spinner.classList.add('hidden');
+        }
+
+        // 6. Gửi toàn bộ dữ liệu lên máy chủ phân tích
+        async function processAllFiles() {
+            if (selectedFiles.length === 0) {
+                showNotification('Chưa chọn tệp', 'Vui lòng chọn hoặc ghi âm ít nhất 1 file tài liệu/cuộc họp.', '⚠️', 'bg-amber-100', 'text-amber-600');
+                return;
+            }
+
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            const promptVal = document.getElementById('customPrompt').value.trim();
+
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            if (promptVal) formData.append('prompt', promptVal);
+
+            setStatus('loading', `⏳ Đang tải ${selectedFiles.length} tệp lên và để AI bóc tách nội dung...`, true);
+            document.getElementById('resultCard').classList.add('hidden');
+            document.getElementById('directiveCard').classList.add('hidden');
+            document.getElementById('officialDocCard').classList.add('hidden');
+
+            try {
+                const response = await fetch(`${baseApi}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error(`Mã lỗi máy chủ: ${response.status}`);
+                const data = await response.json();
+
+                combinedMeetingText = data.combined_content || "";
+                setStatus('success', `✅ Hoàn thành phân tích ${data.total_files} tệp và đã lưu dữ liệu an toàn vào Supabase!`, false);
+
+                // Hiển thị nội dung
+                document.getElementById('totalTranscriptContent').innerText = combinedMeetingText;
+                const words = combinedMeetingText.trim().split(/\s+/).filter(Boolean).length;
+                document.getElementById('summaryWordCount').innerText = `${words} từ`;
+
+                // Hiển thị phân tích trả lời nếu có
+                if (data.analysis) {
+                    document.getElementById('analysisContent').innerText = data.analysis;
+                    document.getElementById('analysisSection').classList.remove('hidden');
+                } else {
+                    document.getElementById('analysisSection').classList.add('hidden');
+                }
+
+                document.getElementById('resultCard').classList.remove('hidden');
+
+                // Kiểm tra mệnh lệnh chỉ đạo thực tế (nếu có âm thanh và có lệnh rõ ràng)
+                if (data.detected_directives && data.detected_directives.length > 0) {
+                    renderDirectives(data.detected_directives);
+                }
+
+            } catch (err) {
+                console.error(err);
+                setStatus('error', `❌ Lỗi kết nối: ${err.message}. Hãy kiểm tra xem Uvicorn trên máy chủ có đang bật không.`, false);
+            }
+        }
+
+        function renderDirectives(directives) {
+            const card = document.getElementById('directiveCard');
+            const desc = document.getElementById('directiveDesc');
+            const actions = document.getElementById('directiveActions');
+
+            desc.innerText = `AI phát hiện trong băng ghi âm có chỉ đạo giao nhiệm vụ soạn thảo văn bản:`;
+            actions.innerHTML = directives.map(d => `
+                <button onclick="requestDocument('${d.type}')" 
+                        class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-xl text-xs shadow transition flex items-center gap-1.5">
+                    <span>✍️</span> ${d.title} (Bấm để tạo ngay)
+                </button>
+            `).join('');
+
+            card.classList.remove('hidden');
+        }
+
+        // 7. Soạn thảo văn bản hành chính theo nội dung thực tế
+        async function requestDocument(docType) {
+            if (!combinedMeetingText) {
+                showNotification('Thiếu nội dung', 'Vui lòng xử lý tệp trước khi tạo văn bản.', '⚠️', 'bg-amber-100', 'text-amber-600');
+                return;
+            }
+
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            const promptVal = document.getElementById('customPrompt').value.trim();
+
+            setStatus('loading', '🏛️ AI Thư ký đang soạn thảo văn bản hành chính chuẩn thể thức...', true);
+
+            const formData = new FormData();
+            formData.append('doc_type', docType);
+            formData.append('content', combinedMeetingText);
+            if (promptVal) formData.append('custom_request', promptVal);
+
+            try {
+                const res = await fetch(`${baseApi}/generate-document`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                setStatus('success', '✅ Đã soạn thảo xong văn bản hành chính!', false);
+
+                document.getElementById('docTitleBadge').innerText = docType === 'cong_van' ? 'CÔNG VĂN TRÌNH GIÁM ĐỐC' : 'BIÊN BẢN CUỘC HỌP';
+                document.getElementById('officialDocContent').value = data.document_content;
+                document.getElementById('officialDocCard').classList.remove('hidden');
+                document.getElementById('officialDocCard').scrollIntoView({behavior: 'smooth'});
+
+            } catch (e) {
+                setStatus('error', '❌ Lỗi khi sinh văn bản: ' + e.message, false);
+            }
+        }
+
+        function copyOfficialDoc() {
+            const text = document.getElementById('officialDocContent').value;
+            copyTextToClipboard(text, 'Đã sao chép toàn bộ văn bản công văn vào khay nhớ tạm!');
+        }
+
+        function downloadOfficialDoc() {
+            const text = document.getElementById('officialDocContent').value;
+            const blob = new Blob([text], {type: 'application/msword;charset=utf-8'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Van_ban_cuoc_hop_${new Date().toISOString().slice(0, 10)}.doc`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function copyTotalTranscript() {
+            copyTextToClipboard(combinedMeetingText, 'Đã sao chép toàn bộ nội dung tài liệu!');
+        }
+
+        function downloadTotalTranscript() {
+            const blob = new Blob([combinedMeetingText], {type: 'text/plain;charset=utf-8'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Tong_hop_cuoc_hop_${new Date().toISOString().slice(0, 10)}.txt`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function copyTextToClipboard(text, successMsg) {
+            if (!text) return;
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showNotification('Thành công', successMsg, '📋', 'bg-emerald-100', 'text-emerald-700');
+            } catch (err) {
+                showNotification('Lỗi', 'Không thể sao chép văn bản tự động.', '❌', 'bg-rose-100', 'text-rose-600');
+            }
+            document.body.removeChild(temp);
+        }
+
+        function showNotification(title, message, icon = 'ℹ️', bg = 'bg-blue-100', color = 'text-blue-600') {
+            const modal = document.getElementById('customModal');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            const iconEl = document.getElementById('modalIcon');
+            iconEl.innerText = icon;
+            iconEl.className = `w-12 h-12 rounded-full ${bg} ${color} flex items-center justify-center text-2xl mx-auto`;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
+    </script>
+</body>
+
+</html>
