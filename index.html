@@ -1,112 +1,175 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Trợ Lý Cuộc Họp & Tài Liệu - Bệnh viện ĐKKV Cầu Ngang</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Thư viện PptxGenJS tạo file PowerPoint trực tiếp trên trình duyệt -->
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-
 <body class="bg-slate-100 min-h-screen py-6 px-3 sm:px-6 flex justify-center items-start text-slate-800">
 
     <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
-
+        
         <!-- Header & Huy hiệu trạng thái -->
-        <div
-            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 mb-6">
             <div class="flex items-center gap-3.5">
-                <div
-                    class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-md">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-md">
                     🏛️
                 </div>
                 <div>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900">AI Trợ Lý Cuộc Họp & Văn Bản</h1>
-                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Bệnh viện ĐKKV Cầu Ngang • Tự Động Phân
-                        Tích & Soạn Thảo Văn Bản</p>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Bệnh viện ĐKKV Cầu Ngang • Tự Động Phân Tích, Nhận Diện Giọng & Soạn Thảo</p>
                 </div>
             </div>
-
+            
             <div class="flex flex-wrap items-center gap-2">
-                <button onclick="openSpeakerModal()"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition">
+                <button onclick="openSpeakerModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition">
                     <span>👥</span> Danh Bạ Giọng (<span id="speakerCountBadge">0</span>)
                 </button>
-
+                
                 <!-- Huy hiệu hiển thị trạng thái kết nối & mô hình Ollama -->
-                <span id="aiModelBadge"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 transition">
+                <span id="aiModelBadge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 transition">
                     <span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>
                     Đang kiểm tra AI...
                 </span>
             </div>
         </div>
 
-        <!-- Địa chỉ trạm AI (cố định ngầm) -->
+        <!-- Địa chỉ trạm AI cố định ngầm -->
         <input type="hidden" id="apiUrl" value="https://api-ai.benhviencaungang.com">
 
-        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 mb-6 space-y-3">
-            <div class="flex items-center justify-between">
-                <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <span class="text-rose-500">🎙️</span> Ghi âm trực tiếp tại cuộc họp:
+        <!-- 1. KHUNG NHẬP TÊN CUỘC HỌP & DANH MỤC GỢI Ý CHUẨN Y TẾ -->
+        <div class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 sm:p-5 mb-6 space-y-3 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <label class="text-xs sm:text-sm font-bold text-indigo-950 flex items-center gap-2">
+                    <span>🏷️</span> Tên Cuộc Họp / Phiên Làm Việc:
                 </label>
-                <div id="recordingStatus" class="hidden items-center gap-2 text-xs font-semibold text-rose-600">
-                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
-                    <span id="recordingTimer">00:00</span> (Đang ghi âm...)
+                <span class="text-[11px] text-indigo-600 font-medium">Bấm chọn loại cuộc họp mẫu bên dưới rồi chỉnh sửa thêm</span>
+            </div>
+
+            <!-- Ô nhập tên cuộc họp cho phép chỉnh sửa tự do -->
+            <div class="relative">
+                <input type="text" id="meetingNameInput" 
+                       placeholder="Ví dụ: Họp giao ban toàn viện hàng ngày, Họp phòng chức năng tháng 9..." 
+                       value="Họp giao ban toàn viện hàng ngày"
+                       class="w-full p-3 bg-white border border-indigo-300 rounded-xl text-sm font-semibold text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition">
+                <button type="button" onclick="document.getElementById('meetingNameInput').value=''; document.getElementById('meetingNameInput').focus();" 
+                        class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs font-bold px-1.5 py-0.5 rounded">
+                    ✕ Xóa
+                </button>
+            </div>
+
+            <!-- Danh sách gợi ý cuộc họp điển hình trong ngành y tế -->
+            <div class="space-y-1.5 pt-1">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-800">Gợi ý loại cuộc họp y tế:</span>
+                <div class="flex flex-wrap gap-1.5" id="meetingChips">
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Họp giao ban ngành y tế hàng tháng</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-indigo-600 text-white font-semibold border border-indigo-600 rounded-lg transition shadow-sm">Họp giao ban toàn viện hàng ngày</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Họp giao ban khoa/phòng</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Họp Hội đồng Thuốc và Điều trị</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Họp Hội đồng Điều dưỡng</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Họp phòng chức năng</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Họp hội chẩn</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Họp Hội đồng Người bệnh</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Họp sơ kết, tổng kết</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Sinh hoạt chuyên môn</button>
+                    <button type="button" onclick="selectMeetingType(this.innerText)" class="px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700">Sinh hoạt khoa học</button>
+                    <button type="button" onclick="promptCustomMeeting()" class="px-2.5 py-1 text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-lg transition font-medium">➕ Cuộc họp khác...</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. GHI ÂM TRỰC TIẾP TẠI PHÒNG HỌP -->
+        <div class="bg-slate-50/80 border border-slate-200 rounded-2xl p-5 sm:p-6 mb-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-200">
+                <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <span class="text-teal-600 text-base">🎙️</span> Ghi âm & Bóc băng trực tiếp tại phòng họp
+                </label>
+                <!-- Bộ hẹn giờ tự ngắt ghi âm -->
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="text-slate-500 font-medium">⏱️ Hẹn giờ tự dừng:</span>
+                    <select id="recordingTimerLimit" class="px-2.5 py-1 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:ring-1 focus:ring-teal-500 shadow-sm">
+                        <option value="0">Không giới hạn</option>
+                        <option value="300">5 phút (Báo cáo nhanh)</option>
+                        <option value="600">10 phút (Ý kiến khoa)</option>
+                        <option value="900">15 phút (Chuyên đề)</option>
+                        <option value="1800">30 phút (Hội chẩn)</option>
+                        <option value="3600">60 phút (Toàn phiên)</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row items-center gap-3">
-                <button type="button" id="btnStartRecord" onclick="toggleRecording()"
-                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition">
-                    <span id="recordBtnIcon">⏺️</span>
-                    <span id="recordBtnText">Bắt đầu ghi âm phát biểu</span>
-                </button>
-                <span class="text-xs text-slate-500 text-center sm:text-left">
-                    Tự động nhận diện vân giọng diễn giả và gán nhãn người phát biểu sau khi bấm dừng.
-                </span>
+            <!-- Vùng hiển thị Mic tròn & Đồng hồ số trung tâm -->
+            <div class="flex flex-col items-center justify-center py-5 space-y-3">
+                <!-- Vòng tròn Micro với hiệu ứng sóng âm khi thu -->
+                <div class="relative flex items-center justify-center">
+                    <div id="micPulseRing" class="absolute w-28 h-28 rounded-full border-4 border-teal-300 opacity-0 transition-all duration-500"></div>
+                    <div id="micCircleBtn" class="w-24 h-24 rounded-full bg-emerald-50 border-4 border-teal-400 flex items-center justify-center shadow-inner text-teal-600 transition-all duration-300">
+                        <svg id="micIconSvg" class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 02-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Đồng hồ hiển thị thời gian số -->
+                <div class="flex flex-col items-center">
+                    <div id="recordingTimer" class="font-mono text-3xl font-bold tracking-wider text-slate-800">
+                        00:00
+                    </div>
+                    <div id="recordingTimerSubtext" class="text-[11px] font-semibold text-slate-400 mt-0.5">
+                        Sẵn sàng ghi âm
+                    </div>
+                </div>
+
+                <!-- Thanh nút điều khiển: Bắt đầu - Tạm dừng - Dừng & Gỡ băng -->
+                <div class="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+                    <!-- Nút 1: Bắt đầu ghi -->
+                    <button type="button" id="btnStartRecord" onclick="startDirectRecording()" 
+                            class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition active:scale-95">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-400 animate-pulse"></span>
+                        <span id="btnStartRecordText">Bắt đầu ghi</span>
+                    </button>
+
+                    <!-- Nút 2: Tạm dừng / Tiếp tục -->
+                    <button type="button" id="btnPauseRecord" onclick="togglePauseRecording()" disabled
+                            class="px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-not-allowed">
+                        <span id="btnPauseRecordIcon">⏸️</span>
+                        <span id="btnPauseRecordText">Tạm dừng</span>
+                    </button>
+
+                    <!-- Nút 3: Dừng & Gỡ băng -->
+                    <button type="button" id="btnStopRecord" onclick="stopDirectRecording()" disabled
+                            class="px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-not-allowed">
+                        <span>⏹️</span>
+                        <span>Dừng & Gỡ băng</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Thẻ nhận diện giọng nói vừa thu -->
-            <div id="speakerIdentifyBox"
-                class="hidden p-3 bg-white rounded-xl border border-indigo-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-sm">
+            <div id="speakerIdentifyBox" class="hidden p-3 bg-white rounded-xl border border-indigo-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-sm">
                 <div class="flex items-center gap-2.5 text-xs text-slate-800">
                     <span id="speakerIdentifyIcon" class="text-lg">⏳</span>
                     <div>
                         <div id="speakerIdentifyTitle" class="font-bold text-slate-900">Đang nhận diện giọng...</div>
-                        <div id="speakerIdentifySubtitle" class="text-slate-500 text-[11px]">Đang đối chiếu vân giọng
-                            với Supabase</div>
+                        <div id="speakerIdentifySubtitle" class="text-slate-500 text-[11px]">Đang đối chiếu vân giọng với Supabase</div>
                     </div>
                 </div>
                 <!-- Khung đặt tên nhanh cho giọng nói mới -->
                 <div id="quickEnrollForm" class="hidden flex items-center gap-2 w-full sm:w-auto">
-                    <input type="text" id="newSpeakerName" placeholder="Tên người nói (VD: GĐ Tuấn)"
-                        class="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-indigo-500 w-full sm:w-48">
-                    <button onclick="enrollLatestAudio()"
-                        class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold whitespace-nowrap transition">
+                    <input type="text" id="newSpeakerName" placeholder="Tên người nói (VD: GĐ Tuấn)" 
+                           class="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-indigo-500 w-full sm:w-48">
+                    <button onclick="enrollLatestAudio()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold whitespace-nowrap transition">
                         💾 Ghi nhớ giọng
                     </button>
                 </div>
@@ -121,6 +184,7 @@
             </div>
         </div>
 
+        <!-- 3. NẠP TÀI LIỆU VĂN BẢN VÀ BẢN GHI ÂM SẴN CÓ -->
         <div class="space-y-4 mb-6">
             <div class="flex items-center justify-between">
                 <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -129,22 +193,21 @@
                 <span id="selectedCountText" class="text-xs text-slate-500 font-medium">Đã chọn 0 tệp</span>
             </div>
 
-            <div id="dropzone"
-                class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-6 text-center transition bg-slate-50/70 cursor-pointer"
-                onclick="document.getElementById('multiFileInput').click()" ondragover="handleDragOver(event)"
-                ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-
-                <input type="file" id="multiFileInput" multiple accept="audio/*,video/*,.pdf,.docx,.doc,.pptx,.ppt,.txt"
-                    class="hidden" onchange="handleFilesSelected(event)">
-
+            <div id="dropzone" class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl p-6 text-center transition bg-slate-50/70 cursor-pointer"
+                 onclick="document.getElementById('multiFileInput').click()"
+                 ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                
+                <input type="file" id="multiFileInput" multiple
+                       accept="audio/*,video/*,.pdf,.docx,.doc,.pptx,.ppt,.txt" 
+                       class="hidden" onchange="handleFilesSelected(event)">
+                
                 <div class="space-y-2">
                     <div class="text-4xl">📥</div>
                     <div class="text-sm font-semibold text-slate-700">
                         Kéo thả nhiều file vào đây hoặc <span class="text-blue-600 underline">bấm để duyệt</span>
                     </div>
                     <p class="text-xs text-slate-500">
-                        Hỗ trợ nạp cùng lúc file âm thanh cuộc họp (.mp3, .wav, .m4a), slide (.pptx), tài liệu (.pdf,
-                        .docx, .txt)
+                        Hỗ trợ nạp cùng lúc file âm thanh cuộc họp (.mp3, .wav, .m4a), slide (.pptx), tài liệu (.pdf, .docx, .txt)
                     </p>
                 </div>
             </div>
@@ -153,42 +216,37 @@
             <div id="fileListContainer" class="hidden space-y-2 max-h-48 overflow-y-auto custom-scrollbar p-1"></div>
         </div>
 
+        <!-- 4. KHUNG YÊU CẦU PHÂN TÍCH CHO AI -->
         <div class="bg-blue-50/60 border border-blue-200 rounded-2xl p-4 mb-6 space-y-2">
             <label class="block text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
                 <span>🧠</span> Câu hỏi hoặc yêu cầu cho AI (Tùy chọn):
             </label>
-            <input type="text" id="customPrompt"
-                placeholder="Ví dụ: Văn bản này nói về vấn đề gì? Tóm tắt các tiêu chí cốt lõi? Cuộc họp thống nhất những việc gì?"
-                class="w-full p-3 bg-white border border-blue-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm placeholder:text-slate-400">
+            <input type="text" id="customPrompt" 
+                   placeholder="Ví dụ: Văn bản này nói về vấn đề gì? Tóm tắt các quyết định quan trọng nhất? Ai chịu trách nhiệm việc gì?" 
+                   class="w-full p-3 bg-white border border-blue-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm placeholder:text-slate-400">
             <div class="flex flex-wrap gap-2 pt-1 text-xs text-slate-600">
-                <span class="font-semibold text-slate-500">Gợi ý câu hỏi:</span>
-                <button type="button" onclick="setPrompt(this.innerText)"
-                    class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Văn
-                    bản này nói về vấn đề gì và những điểm chính cần lưu ý?</button>
-                <button type="button" onclick="setPrompt(this.innerText)"
-                    class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Tóm
-                    tắt các quyết định quan trọng nhất trong cuộc họp</button>
+                <span class="font-semibold text-slate-500">Gợi ý nhanh:</span>
+                <button type="button" onclick="setPrompt(this.innerText)" class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Văn bản này nói về vấn đề gì và những điểm chính cần lưu ý?</button>
+                <button type="button" onclick="setPrompt(this.innerText)" class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">Tóm tắt các quyết định và mốc thời gian hoàn thành</button>
             </div>
         </div>
 
-        <!-- Nút kích hoạt bóc tách và phân tích -->
-        <button id="btnProcess" onclick="processAllFiles()"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.99] flex justify-center items-center gap-2 text-sm sm:text-base">
-            <span>⚡ Bắt Đầu Xử Lý Đa Tệp & Phân Tích Nội Dung</span>
+        <!-- NÚT KÍCH HOẠT BÓC TÁCH VÀ PHÂN TÍCH -->
+        <button id="btnProcess" onclick="processAllFiles()" 
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.99] flex justify-center items-center gap-2 text-sm sm:text-base">
+            <span>⚡ Bắt Đầu Xử Lý Đa Tệp & Lưu Cuộc Họp</span>
         </button>
 
         <!-- Thẻ thông báo trạng thái xử lý -->
-        <div id="statusCard"
-            class="hidden mt-6 p-4 rounded-xl text-sm font-medium flex items-center justify-between transition-all">
+        <div id="statusCard" class="hidden mt-6 p-4 rounded-xl text-sm font-medium flex items-center justify-between transition-all">
             <div class="flex items-center gap-3">
-                <div id="statusSpinner"
-                    class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                <div id="statusSpinner" class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                 <span id="statusText">Đang xử lý dữ liệu...</span>
             </div>
         </div>
 
-        <div id="directiveCard"
-            class="hidden mt-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 rounded-2xl p-5 shadow-sm space-y-3">
+        <!-- Thẻ phát hiện chỉ đạo tự động -->
+        <div id="directiveCard" class="hidden mt-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 rounded-2xl p-5 shadow-sm space-y-3">
             <div class="flex items-center gap-2 text-amber-800 font-bold text-sm sm:text-base">
                 <span class="text-xl">🔔</span> Phát hiện Mệnh Lệnh / Chỉ Đạo Cuộc Họp:
             </div>
@@ -196,130 +254,149 @@
             <div class="flex flex-wrap gap-2.5 pt-1" id="directiveActions"></div>
         </div>
 
-        <!-- Khung hiển thị văn bản hành chính tự động tạo -->
-        <div id="officialDocCard"
-            class="hidden mt-6 bg-slate-900 text-slate-100 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+        <!-- KHUNG HIỂN THỊ VĂN BẢN / SLIDE / SƠ ĐỒ NHIỆM VỤ DO AI TẠO -->
+        <div id="officialDocCard" class="hidden mt-6 bg-slate-900 text-slate-100 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
             <div class="flex flex-wrap justify-between items-center gap-2 pb-3 border-b border-slate-800">
                 <div class="flex items-center gap-2">
-                    <span
-                        class="px-2.5 py-1 bg-blue-500/20 text-blue-300 rounded text-xs font-bold uppercase tracking-wider">
-                        📄 Văn bản hành chính chuẩn thể thức
+                    <span id="docTypeTag" class="px-2.5 py-1 bg-blue-500/20 text-blue-300 rounded text-xs font-bold uppercase tracking-wider">
+                        📄 Văn bản hành chính
                     </span>
-                    <span id="docTitleBadge" class="text-xs text-slate-400 font-medium">Biên bản / Công văn</span>
+                    <span id="docTitleBadge" class="text-xs text-slate-400 font-medium">Biên bản cuộc họp</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="copyOfficialDoc()"
-                        class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1">
+                
+                <!-- CÁC NÚT TẢI VỀ WORD / PPTX / SAO CHÉP -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="copyOfficialDoc()" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1.5 border border-slate-700">
                         📋 Sao chép
                     </button>
-                    <button onclick="downloadOfficialDoc()"
-                        class="text-xs font-semibold text-blue-400 hover:text-blue-300 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1">
-                        💾 Tải file .doc
+                    <button onclick="downloadOfficialDoc()" class="text-xs font-semibold text-blue-400 hover:text-blue-300 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1.5 border border-slate-700">
+                        💾 Tải file Word (.doc)
+                    </button>
+                    <button id="btnExportPptx" onclick="exportPptxFromDoc()" class="text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1.5 border border-slate-700">
+                        📊 Xuất Slide (.pptx)
                     </button>
                 </div>
             </div>
-            <textarea id="officialDocContent" rows="15"
-                class="w-full bg-slate-950 text-slate-100 font-mono text-xs sm:text-sm p-4 rounded-xl border border-slate-800 outline-none focus:ring-1 focus:ring-blue-500 leading-relaxed custom-scrollbar"></textarea>
+
+            <textarea id="officialDocContent" rows="16" class="w-full bg-slate-950 text-slate-100 font-mono text-xs sm:text-sm p-4 rounded-xl border border-slate-800 outline-none focus:ring-1 focus:ring-blue-500 leading-relaxed custom-scrollbar"></textarea>
         </div>
 
-        <div id="resultCard"
-            class="hidden mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-inner space-y-4">
+        <!-- KHUNG KẾT QUẢ PHÂN TÍCH VÀ CÔNG CỤ TẠO VĂN BẢN CHỦ ĐỘNG -->
+        <div id="resultCard" class="hidden mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-inner space-y-5">
+            
+            <!-- Thẻ danh sách Diễn giả phát hiện trong phiên họp -->
+            <div id="speakersDetectedBox" class="hidden p-3.5 bg-indigo-50/80 border border-indigo-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">👥</span>
+                    <div>
+                        <span class="text-xs font-bold text-indigo-900 uppercase">Diễn giả nhận diện trong phiên họp:</span>
+                        <div id="speakersDetectedList" class="flex flex-wrap gap-1.5 mt-1"></div>
+                    </div>
+                </div>
+                <span class="text-[11px] text-indigo-600 font-medium">Phân đoạn & gắn nhãn theo dòng thời gian</span>
+            </div>
 
             <!-- Phần phân tích trả lời câu hỏi của người dùng -->
-            <div id="analysisSection"
-                class="hidden bg-white p-4 sm:p-5 rounded-xl border border-blue-200 shadow-sm space-y-2.5">
+            <div id="analysisSection" class="hidden bg-white p-4 sm:p-5 rounded-xl border border-blue-200 shadow-sm space-y-2.5">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2 text-blue-700 font-bold text-xs uppercase tracking-wider">
-                        <span>🤖</span> Kết quả AI Đọc & Phân Tích Tài Liệu:
+                        <span>🤖</span> Kết quả AI Đọc & Phân Tích Nội Dung:
                     </div>
                     <span id="analysisModelSource" class="text-[11px] font-semibold text-slate-400"></span>
                 </div>
-                <div id="analysisContent" class="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap font-sans">
-                </div>
+                <div id="analysisContent" class="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap font-sans"></div>
             </div>
 
             <!-- Tổng hợp nội dung các tệp -->
             <div class="flex flex-wrap justify-between items-center gap-2 pt-2 border-t border-slate-200">
                 <div class="flex items-center gap-2">
-                    <span
-                        class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-slate-200 text-slate-700">
-                        Nội dung tổng hợp từ các tệp
+                    <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-slate-200 text-slate-700">
+                        Biên bản hội thoại & Dữ liệu cuộc họp
                     </span>
                     <span id="summaryWordCount" class="text-xs text-slate-500 font-medium">0 từ</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="copyTotalTranscript()"
-                        class="text-xs font-semibold text-blue-600 hover:text-blue-800 px-2.5 py-1 rounded hover:bg-blue-50 transition">
+                    <button onclick="copyTotalTranscript()" class="text-xs font-semibold text-blue-600 hover:text-blue-800 px-2.5 py-1 rounded hover:bg-blue-50 transition">
                         📋 Sao chép tất cả
                     </button>
-                    <button onclick="downloadTotalTranscript()"
-                        class="text-xs font-semibold text-slate-600 hover:text-slate-800 px-2.5 py-1 rounded hover:bg-slate-200 transition">
+                    <button onclick="downloadTotalTranscript()" class="text-xs font-semibold text-slate-600 hover:text-slate-800 px-2.5 py-1 rounded hover:bg-slate-200 transition">
                         💾 Tải file .txt
                     </button>
                 </div>
             </div>
 
-            <div id="totalTranscriptContent"
-                class="text-slate-800 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap max-h-96 overflow-y-auto custom-scrollbar p-3 bg-white rounded-xl border border-slate-200 shadow-sm font-mono">
-            </div>
+            <div id="totalTranscriptContent" class="text-slate-800 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto custom-scrollbar p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm font-mono"></div>
 
-            <!-- Công cụ chủ động tạo văn bản -->
-            <div class="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
-                <span class="text-xs text-slate-500 font-medium">Chuyển nội dung trên thành văn bản hành chính:</span>
-                <div class="flex gap-2">
-                    <button onclick="requestDocument('bien_ban')"
-                        class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold transition">
-                        📝 Tạo Biên Bản Họp
+            <!-- THANH CÔNG CỤ TẠO 4 LOẠI TÀI LIỆU CHUYÊN MÔN / HÀNH CHÍNH -->
+            <div class="pt-3 border-t border-slate-200 space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase text-slate-600 tracking-wider">
+                        🚀 Chuyển đổi nội dung cuộc họp thành văn bản chuyên nghiệp:
+                    </span>
+                    <span class="text-[11px] text-slate-400">Đầy đủ thể thức Nghị định 30/2020/NĐ-CP</span>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <button onclick="requestDocument('bien_ban')" 
+                            class="p-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold shadow-sm transition flex flex-col items-center justify-center gap-1">
+                        <span class="text-base">📝</span>
+                        <span>Biên Bản Họp</span>
                     </button>
-                    <button onclick="requestDocument('cong_van')"
-                        class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition">
-                        🏛️ Tạo Công Văn Trình GĐ
+                    
+                    <button onclick="requestDocument('cong_van')" 
+                            class="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm transition flex flex-col items-center justify-center gap-1">
+                        <span class="text-base">🏛️</span>
+                        <span>Công Văn Trình GĐ</span>
+                    </button>
+
+                    <button onclick="requestDocument('slide_trinh_chieu')" 
+                            class="p-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold shadow-sm transition flex flex-col items-center justify-center gap-1">
+                        <span class="text-base">📊</span>
+                        <span>Slide Trình Báo</span>
+                    </button>
+
+                    <button onclick="requestDocument('phan_cong_nhiem_vu')" 
+                            class="p-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-sm transition flex flex-col items-center justify-center gap-1">
+                        <span class="text-base">📋</span>
+                        <span>Sơ Đồ Phân Công</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Hộp thoại thông báo tùy biến (thay cho alert) -->
-        <div id="customModal"
-            class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-            <div
-                class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 text-center space-y-4">
-                <div id="modalIcon"
-                    class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mx-auto">
+        <!-- Hộp thoại thông báo tùy biến -->
+        <div id="customModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 text-center space-y-4">
+                <div id="modalIcon" class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mx-auto">
                     ℹ️
                 </div>
                 <h3 id="modalTitle" class="text-base font-bold text-slate-800">Thông báo</h3>
                 <p id="modalMessage" class="text-sm text-slate-600 leading-relaxed"></p>
-                <button onclick="closeModal()"
-                    class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl transition">
+                <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl transition">
                     Đã hiểu
                 </button>
             </div>
         </div>
 
         <!-- Modal Quản Lý Danh Bạ Giọng Nói Diễn Giả -->
-        <div id="speakerModal"
-            class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div id="speakerModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
             <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                     <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
                         <span>👥</span> Danh Bạ Mẫu Giọng Diễn Giả
                     </h3>
-                    <button onclick="closeSpeakerModal()"
-                        class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                    <button onclick="closeSpeakerModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
                 </div>
 
                 <p class="text-xs text-slate-500">
-                    Hệ thống tự động trích xuất vân giọng đặc trưng và lưu an toàn trên Supabase để tự động nhận dạng
-                    tên người phát biểu trong các cuộc họp sau.
+                    Hệ thống tự động trích xuất vân giọng đặc trưng và lưu an toàn trên Supabase để tự động nhận dạng tên người phát biểu trong các cuộc họp sau.
                 </p>
 
                 <div id="speakerList" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-1">
                     <div class="text-center text-xs text-slate-400 py-4">Đang nạp danh sách...</div>
                 </div>
 
-                <button onclick="closeSpeakerModal()"
-                    class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition">
+                <button onclick="closeSpeakerModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition">
                     Đóng
                 </button>
             </div>
@@ -330,11 +407,14 @@
     <script>
         let selectedFiles = [];
         let combinedMeetingText = "";
-
+        let currentDocumentType = "bien_ban";
+        
         let mediaRecorder = null;
         let audioChunks = [];
         let recordInterval = null;
         let recordSeconds = 0;
+        let maxLimitSeconds = 0;
+        let isRecordingPaused = false;
         let latestRecordedBlob = null;
         let latestRecordedFile = null;
 
@@ -343,7 +423,34 @@
             checkAiModelConnection();
         });
 
-        // 1. Kiểm tra trạng thái Ollama và mô hình đang đồng bộ
+        // 1. Quản lý lựa chọn và sửa tên cuộc họp
+        function selectMeetingType(typeName) {
+            const input = document.getElementById('meetingNameInput');
+            input.value = typeName;
+            input.focus();
+            // Đặt con trỏ văn bản ở cuối để người dùng gõ thêm (VD: thêm "tháng 9")
+            const len = input.value.length;
+            input.setSelectionRange(len, len);
+
+            // Cập nhật trạng thái nút bấm
+            document.querySelectorAll('#meetingChips button').forEach(b => {
+                if (b.innerText === typeName) {
+                    b.className = "px-2.5 py-1 text-xs bg-indigo-600 text-white font-semibold border border-indigo-600 rounded-lg transition shadow-sm";
+                } else if (!b.innerText.includes('Cuộc họp khác')) {
+                    b.className = "px-2.5 py-1 text-xs bg-white hover:bg-indigo-100 hover:text-indigo-800 border border-indigo-200 rounded-lg transition text-slate-700";
+                }
+            });
+        }
+
+        function promptCustomMeeting() {
+            const current = document.getElementById('meetingNameInput').value;
+            const custom = prompt("Nhập tên cuộc họp cụ thể của bạn:", current || "Họp chuyên đề ");
+            if (custom && custom.trim()) {
+                document.getElementById('meetingNameInput').value = custom.trim();
+            }
+        }
+
+        // 2. Kiểm tra trạng thái Ollama
         async function checkAiModelConnection() {
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             const badge = document.getElementById('aiModelBadge');
@@ -365,7 +472,7 @@
             }
         }
 
-        // 2. Tải danh sách diễn giả từ Supabase
+        // 3. Tải danh bạ diễn giả
         async function loadSpeakerList() {
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             try {
@@ -399,7 +506,7 @@
         async function deleteSpeaker(id) {
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             try {
-                await fetch(`${baseApi}/speaker/${id}`, {method: 'DELETE'});
+                await fetch(`${baseApi}/speaker/${id}`, { method: 'DELETE' });
                 showNotification('Đã xóa', 'Đã xóa mẫu giọng khỏi hệ thống.', '🗑️', 'bg-rose-100', 'text-rose-600');
                 loadSpeakerList();
             } catch (e) {
@@ -416,21 +523,21 @@
             document.getElementById('speakerModal').classList.add('hidden');
         }
 
-        // 3. Logic Ghi âm trực tiếp
-        async function toggleRecording() {
+        async function startDirectRecording() {
             if (mediaRecorder && mediaRecorder.state === "recording") {
-                stopRecording();
-            } else {
-                startRecording();
+                return;
             }
-        }
 
-        async function startRecording() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 recordSeconds = 0;
+                isRecordingPaused = false;
+
+                // Lấy cấu hình hẹn giờ tự ngắt
+                const limitVal = parseInt(document.getElementById('recordingTimerLimit').value) || 0;
+                maxLimitSeconds = limitVal;
 
                 mediaRecorder.ondataavailable = (e) => {
                     if (e.data.size > 0) audioChunks.push(e.data);
@@ -440,12 +547,12 @@
                     clearInterval(recordInterval);
                     const mimeType = mediaRecorder.mimeType || 'audio/webm';
                     const ext = mimeType.includes('mp4') ? 'm4a' : (mimeType.includes('ogg') ? 'ogg' : 'webm');
-                    latestRecordedBlob = new Blob(audioChunks, {type: mimeType});
-
+                    latestRecordedBlob = new Blob(audioChunks, { type: mimeType });
+                    
                     const now = new Date();
-                    const timeStr = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+                    const timeStr = `${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}${now.getSeconds().toString().padStart(2,'0')}`;
                     const fileName = `Ghi_am_truc_tiep_${timeStr}.${ext}`;
-                    latestRecordedFile = new File([latestRecordedBlob], fileName, {type: mimeType});
+                    latestRecordedFile = new File([latestRecordedBlob], fileName, { type: mimeType });
 
                     addFiles([latestRecordedFile]);
 
@@ -455,30 +562,26 @@
                     document.getElementById('audioPreviewContainer').classList.add('flex');
 
                     stream.getTracks().forEach(track => track.stop());
-
-                    document.getElementById('recordBtnText').innerText = "Bắt đầu ghi âm phát biểu";
-                    document.getElementById('recordBtnIcon').innerText = "⏺️";
-                    document.getElementById('btnStartRecord').className = "w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition";
-                    document.getElementById('recordingStatus').classList.add('hidden');
-                    document.getElementById('recordingStatus').classList.remove('flex');
-
-                    // Nhận diện giọng nói ngay khi vừa thu âm xong
+                    resetRecordingUiState();
                     identifyRecordedSpeaker(latestRecordedFile);
                 };
 
                 mediaRecorder.start(250);
 
-                document.getElementById('recordBtnText').innerText = "Dừng & Lưu đoạn ghi âm";
-                document.getElementById('recordBtnIcon').innerText = "⏹️";
-                document.getElementById('btnStartRecord').className = "w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition animate-pulse";
-                document.getElementById('recordingStatus').classList.remove('hidden');
-                document.getElementById('recordingStatus').classList.add('flex');
+                // Cập nhật trạng thái giao diện đang ghi âm
+                updateUiForRecording();
 
                 recordInterval = setInterval(() => {
-                    recordSeconds++;
-                    const mins = Math.floor(recordSeconds / 60).toString().padStart(2, '0');
-                    const secs = (recordSeconds % 60).toString().padStart(2, '0');
-                    document.getElementById('recordingTimer').innerText = `${mins}:${secs}`;
+                    if (!isRecordingPaused) {
+                        recordSeconds++;
+                        formatAndDisplayTimer();
+
+                        // Kiểm tra nếu đạt mốc hẹn giờ tự dừng
+                        if (maxLimitSeconds > 0 && recordSeconds >= maxLimitSeconds) {
+                            stopDirectRecording();
+                            showNotification('Hết giờ phát biểu', `Đã tự động dừng và lưu file ghi âm theo mốc ${maxLimitSeconds / 60} phút đã hẹn.`, '⏱️', 'bg-teal-100', 'text-teal-700');
+                        }
+                    }
                 }, 1000);
 
             } catch (err) {
@@ -487,13 +590,114 @@
             }
         }
 
-        function stopRecording() {
+        function togglePauseRecording() {
+            if (!mediaRecorder || mediaRecorder.state === "inactive") return;
+
+            const btnPause = document.getElementById('btnPauseRecord');
+            const subtext = document.getElementById('recordingTimerSubtext');
+            const pulseRing = document.getElementById('micPulseRing');
+            const micCircle = document.getElementById('micCircleBtn');
+
+            if (!isRecordingPaused) {
+                // Tạm dừng
+                mediaRecorder.pause();
+                isRecordingPaused = true;
+                btnPause.className = "px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition";
+                document.getElementById('btnPauseRecordIcon').innerText = "▶️";
+                document.getElementById('btnPauseRecordText').innerText = "Tiếp tục ghi";
+                subtext.innerText = "Đang tạm dừng ghi";
+                subtext.className = "text-[11px] font-semibold text-amber-600 mt-0.5";
+                pulseRing.className = "absolute w-28 h-28 rounded-full border-4 border-amber-300 opacity-0 transition-all duration-500";
+                micCircle.className = "w-24 h-24 rounded-full bg-amber-50 border-4 border-amber-400 flex items-center justify-center text-amber-600 transition-all duration-300";
+            } else {
+                // Tiếp tục ghi
+                mediaRecorder.resume();
+                isRecordingPaused = false;
+                btnPause.className = "px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition";
+                document.getElementById('btnPauseRecordIcon').innerText = "⏸️";
+                document.getElementById('btnPauseRecordText').innerText = "Tạm dừng";
+                subtext.innerText = "Đang thu âm phát biểu...";
+                subtext.className = "text-[11px] font-semibold text-teal-600 mt-0.5 animate-pulse";
+                pulseRing.className = "absolute w-28 h-28 rounded-full border-4 border-teal-300 opacity-75 animate-ping";
+                micCircle.className = "w-24 h-24 rounded-full bg-teal-50 border-4 border-teal-500 flex items-center justify-center text-teal-600 shadow-md transition-all duration-300";
+            }
+        }
+
+        function stopDirectRecording() {
             if (mediaRecorder && mediaRecorder.state !== "inactive") {
                 mediaRecorder.stop();
             }
         }
 
-        // 4. Nhận diện giọng nói đã lưu hoặc đề xuất đặt tên
+        function updateUiForRecording() {
+            const btnStart = document.getElementById('btnStartRecord');
+            const btnPause = document.getElementById('btnPauseRecord');
+            const btnStop = document.getElementById('btnStopRecord');
+            const pulseRing = document.getElementById('micPulseRing');
+            const micCircle = document.getElementById('micCircleBtn');
+            const subtext = document.getElementById('recordingTimerSubtext');
+
+            // Disable nút Bắt đầu
+            btnStart.disabled = true;
+            btnStart.className = "px-5 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-2 cursor-not-allowed";
+
+            // Enable nút Tạm dừng
+            btnPause.disabled = false;
+            btnPause.className = "px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition";
+            document.getElementById('btnPauseRecordIcon').innerText = "⏸️";
+            document.getElementById('btnPauseRecordText').innerText = "Tạm dừng";
+
+            // Enable nút Dừng & Gỡ băng
+            btnStop.disabled = false;
+            btnStop.className = "px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition";
+
+            // Hiệu ứng sóng âm mic
+            pulseRing.className = "absolute w-28 h-28 rounded-full border-4 border-teal-300 opacity-75 animate-ping";
+            micCircle.className = "w-24 h-24 rounded-full bg-teal-50 border-4 border-teal-500 flex items-center justify-center text-teal-600 shadow-md transition-all duration-300";
+            subtext.innerText = "Đang thu âm phát biểu...";
+            subtext.className = "text-[11px] font-semibold text-teal-600 mt-0.5 animate-pulse";
+        }
+
+        function resetRecordingUiState() {
+            const btnStart = document.getElementById('btnStartRecord');
+            const btnPause = document.getElementById('btnPauseRecord');
+            const btnStop = document.getElementById('btnStopRecord');
+            const pulseRing = document.getElementById('micPulseRing');
+            const micCircle = document.getElementById('micCircleBtn');
+            const subtext = document.getElementById('recordingTimerSubtext');
+
+            btnStart.disabled = false;
+            btnStart.className = "px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition active:scale-95";
+
+            btnPause.disabled = true;
+            btnPause.className = "px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-not-allowed";
+            document.getElementById('btnPauseRecordIcon').innerText = "⏸️";
+            document.getElementById('btnPauseRecordText').innerText = "Tạm dừng";
+
+            btnStop.disabled = true;
+            btnStop.className = "px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-not-allowed";
+
+            pulseRing.className = "absolute w-28 h-28 rounded-full border-4 border-teal-300 opacity-0 transition-all duration-500";
+            micCircle.className = "w-24 h-24 rounded-full bg-emerald-50 border-4 border-teal-400 flex items-center justify-center shadow-inner text-teal-600 transition-all duration-300";
+            subtext.innerText = "Đã hoàn thành đoạn ghi";
+            subtext.className = "text-[11px] font-semibold text-emerald-600 mt-0.5";
+        }
+
+        function formatAndDisplayTimer() {
+            const mins = Math.floor(recordSeconds / 60).toString().padStart(2, '0');
+            const secs = (recordSeconds % 60).toString().padStart(2, '0');
+            
+            if (maxLimitSeconds > 0) {
+                const rem = Math.max(0, maxLimitSeconds - recordSeconds);
+                const rMins = Math.floor(rem / 60).toString().padStart(2, '0');
+                const rSecs = (rem % 60).toString().padStart(2, '0');
+                document.getElementById('recordingTimer').innerText = `${mins}:${secs}`;
+                document.getElementById('recordingTimerSubtext').innerText = `Còn lại: ${rMins}:${rSecs} (Hẹn giờ ${maxLimitSeconds / 60}p)`;
+            } else {
+                document.getElementById('recordingTimer').innerText = `${mins}:${secs}`;
+            }
+        }
+
         async function identifyRecordedSpeaker(file) {
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             const box = document.getElementById('speakerIdentifyBox');
@@ -512,13 +716,13 @@
             fd.append('file', file);
 
             try {
-                const res = await fetch(`${baseApi}/speaker/identify`, {method: 'POST', body: fd});
+                const res = await fetch(`${baseApi}/speaker/identify`, { method: 'POST', body: fd });
                 const data = await res.json();
 
                 if (data.identified && data.speaker) {
                     icon.innerText = "✅";
                     title.innerHTML = `Đã nhận diện: <span class="text-indigo-700 font-bold">${data.speaker.name}</span>`;
-                    sub.innerText = `Độ trùng khớp: ${data.speaker.similarity}% • Tự động gắn nhãn vào biên bản`;
+                    sub.innerText = `Độ trùng khớp: ${data.speaker.similarity}% • Tự động gắn nhãn vào cuộc họp`;
                 } else {
                     icon.innerText = "👤";
                     title.innerText = "Phát hiện giọng nói mới chưa lưu danh tính";
@@ -549,7 +753,7 @@
             fd.append('file', latestRecordedFile);
 
             try {
-                const res = await fetch(`${baseApi}/speaker/enroll`, {method: 'POST', body: fd});
+                const res = await fetch(`${baseApi}/speaker/enroll`, { method: 'POST', body: fd });
                 const data = await res.json();
 
                 if (res.ok) {
@@ -567,7 +771,7 @@
             }
         }
 
-        // 5. Xử lý tập tin kéo thả / duyệt
+        // 5. Xử lý tệp tin kéo thả / duyệt
         function setPrompt(text) {
             document.getElementById('customPrompt').value = text;
         }
@@ -620,7 +824,7 @@
             container.classList.remove('hidden');
             container.innerHTML = selectedFiles.map((file, idx) => {
                 const ext = file.name.split('.').pop().toLowerCase();
-                const icon = ['mp3', 'wav', 'm4a', 'webm', 'ogg'].includes(ext) ? '🎙️' : (ext === 'pdf' ? '📄' : (['docx', 'doc'].includes(ext) ? '📝' : (['pptx', 'ppt'].includes(ext) ? '📊' : '📃')));
+                const icon = ['mp3','wav','m4a','webm','ogg'].includes(ext) ? '🎙️' : (ext === 'pdf' ? '📄' : (['docx','doc'].includes(ext) ? '📝' : (['pptx','ppt'].includes(ext) ? '📊' : '📃')));
                 return `
                     <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
                         <div class="flex items-center gap-2 overflow-hidden">
@@ -642,8 +846,8 @@
             const spinner = document.getElementById('statusSpinner');
 
             card.classList.remove('hidden', 'bg-blue-50', 'text-blue-800', 'border-blue-200',
-                'bg-emerald-50', 'text-emerald-800', 'border-emerald-200',
-                'bg-rose-50', 'text-rose-800', 'border-rose-200', 'border');
+                                           'bg-emerald-50', 'text-emerald-800', 'border-emerald-200',
+                                           'bg-rose-50', 'text-rose-800', 'border-rose-200', 'border');
 
             if (type === 'loading') card.classList.add('bg-blue-50', 'text-blue-800', 'border', 'border-blue-200');
             if (type === 'success') card.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
@@ -662,14 +866,16 @@
 
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             const promptVal = document.getElementById('customPrompt').value.trim();
+            const meetingName = document.getElementById('meetingNameInput').value.trim() || 'Họp giao ban Bệnh viện';
 
             const formData = new FormData();
             selectedFiles.forEach(file => {
                 formData.append('files', file);
             });
+            formData.append('meeting_name', meetingName);
             if (promptVal) formData.append('prompt', promptVal);
 
-            setStatus('loading', `⏳ Đang tải ${selectedFiles.length} tệp lên và để AI bóc tách nội dung...`, true);
+            setStatus('loading', `⏳ Đang nạp ${selectedFiles.length} tệp cho phiên [${meetingName}]...`, true);
             document.getElementById('resultCard').classList.add('hidden');
             document.getElementById('directiveCard').classList.add('hidden');
             document.getElementById('officialDocCard').classList.add('hidden');
@@ -684,14 +890,26 @@
                 const data = await response.json();
 
                 combinedMeetingText = data.combined_content || "";
-                setStatus('success', `✅ Hoàn thành phân tích ${data.total_files} tệp và đã lưu dữ liệu an toàn vào Supabase!`, false);
+                setStatus('success', `✅ Hoàn thành phiên [${meetingName}]: Đã phân tích ${data.total_files} tệp và lưu Supabase!`, false);
 
-                // Hiển thị nội dung
                 document.getElementById('totalTranscriptContent').innerText = combinedMeetingText;
                 const words = combinedMeetingText.trim().split(/\s+/).filter(Boolean).length;
                 document.getElementById('summaryWordCount').innerText = `${words} từ`;
 
-                // Hiển thị phân tích trả lời nếu có
+                // Hiển thị danh sách các diễn giả được nhận diện trong file ghi âm
+                const spkBox = document.getElementById('speakersDetectedBox');
+                const spkList = document.getElementById('speakersDetectedList');
+                if (data.detected_speakers && data.detected_speakers.length > 0) {
+                    spkList.innerHTML = data.detected_speakers.map(name => `
+                        <span class="px-2.5 py-1 text-xs font-semibold bg-white text-indigo-700 border border-indigo-200 rounded-lg shadow-xs">
+                            🎙️ ${name}
+                        </span>
+                    `).join('');
+                    spkBox.classList.remove('hidden');
+                } else {
+                    spkBox.classList.add('hidden');
+                }
+
                 if (data.analysis) {
                     document.getElementById('analysisContent').innerText = data.analysis;
                     document.getElementById('analysisSection').classList.remove('hidden');
@@ -701,7 +919,6 @@
 
                 document.getElementById('resultCard').classList.remove('hidden');
 
-                // Kiểm tra mệnh lệnh chỉ đạo thực tế (nếu có âm thanh và có lệnh rõ ràng)
                 if (data.detected_directives && data.detected_directives.length > 0) {
                     renderDirectives(data.detected_directives);
                 }
@@ -717,7 +934,7 @@
             const desc = document.getElementById('directiveDesc');
             const actions = document.getElementById('directiveActions');
 
-            desc.innerText = `AI phát hiện trong băng ghi âm có chỉ đạo giao nhiệm vụ soạn thảo văn bản:`;
+            desc.innerText = `AI phát hiện trong cuộc họp có mệnh lệnh chỉ đạo giao việc cụ thể:`;
             actions.innerHTML = directives.map(d => `
                 <button onclick="requestDocument('${d.type}')" 
                         class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-xl text-xs shadow transition flex items-center gap-1.5">
@@ -728,21 +945,38 @@
             card.classList.remove('hidden');
         }
 
-        // 7. Soạn thảo văn bản hành chính theo nội dung thực tế
+        // 7. Tạo văn bản hành chính / Slide / Sơ đồ phân công
         async function requestDocument(docType) {
             if (!combinedMeetingText) {
-                showNotification('Thiếu nội dung', 'Vui lòng xử lý tệp trước khi tạo văn bản.', '⚠️', 'bg-amber-100', 'text-amber-600');
+                showNotification('Thiếu nội dung', 'Vui lòng nạp hoặc ghi âm tệp trước khi tạo văn bản.', '⚠️', 'bg-amber-100', 'text-amber-600');
                 return;
             }
 
+            currentDocumentType = docType;
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             const promptVal = document.getElementById('customPrompt').value.trim();
+            const meetingName = document.getElementById('meetingNameInput').value.trim() || 'Họp giao ban';
 
-            setStatus('loading', '🏛️ AI Thư ký đang soạn thảo văn bản hành chính chuẩn thể thức...', true);
+            const typeTitles = {
+                'bien_ban': 'BIÊN BẢN CUỘC HỌP',
+                'cong_van': 'CÔNG VĂN TRÌNH GIÁM ĐỐC',
+                'slide_trinh_chieu': 'SLIDE TRÌNH BÁO CUỘC HỌP',
+                'phan_cong_nhiem_vu': 'SƠ ĐỒ PHÂN CÔNG NHIỆM VỤ'
+            };
+
+            const typeTags = {
+                'bien_ban': '📄 Văn bản hành chính',
+                'cong_van': '🏛️ Tờ trình / Công văn',
+                'slide_trinh_chieu': '📊 Dàn ý Bài trình chiếu',
+                'phan_cong_nhiem_vu': '📋 Ma trận Giao việc & Giám sát'
+            };
+
+            setStatus('loading', `🏛️ AI Thư ký đang soạn thảo ${typeTitles[docType]} cho "${meetingName}"...`, true);
 
             const formData = new FormData();
             formData.append('doc_type', docType);
             formData.append('content', combinedMeetingText);
+            formData.append('meeting_name', meetingName);
             if (promptVal) formData.append('custom_request', promptVal);
 
             try {
@@ -751,30 +985,168 @@
                     body: formData
                 });
                 const data = await res.json();
-
-                setStatus('success', '✅ Đã soạn thảo xong văn bản hành chính!', false);
-
-                document.getElementById('docTitleBadge').innerText = docType === 'cong_van' ? 'CÔNG VĂN TRÌNH GIÁM ĐỐC' : 'BIÊN BẢN CUỘC HỌP';
+                
+                setStatus('success', `✅ Đã hoàn thành ${typeTitles[docType]}!`, false);
+                
+                document.getElementById('docTypeTag').innerText = typeTags[docType] || 'Văn bản y tế';
+                document.getElementById('docTitleBadge').innerText = `${typeTitles[docType]} - ${meetingName}`;
                 document.getElementById('officialDocContent').value = data.document_content;
+                
+                // Hiển thị hoặc làm nổi bật nút PPTX nếu là slide
+                const btnPptx = document.getElementById('btnExportPptx');
+                if (docType === 'slide_trinh_chieu') {
+                    btnPptx.className = "text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1.5 animate-bounce";
+                } else {
+                    btnPptx.className = "text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1.5 border border-slate-700";
+                }
+
                 document.getElementById('officialDocCard').classList.remove('hidden');
-                document.getElementById('officialDocCard').scrollIntoView({behavior: 'smooth'});
+                document.getElementById('officialDocCard').scrollIntoView({ behavior: 'smooth' });
 
             } catch (e) {
                 setStatus('error', '❌ Lỗi khi sinh văn bản: ' + e.message, false);
             }
         }
 
+        // 8. Xuất file PowerPoint (.pptx) bằng thư viện PptxGenJS
+        function exportPptxFromDoc() {
+            const text = document.getElementById('officialDocContent').value.trim();
+            const meetingName = document.getElementById('meetingNameInput').value.trim() || "Báo Cáo Cuộc Họp";
+
+            if (!text) {
+                showNotification('Trống', 'Chưa có nội dung để xuất slide.', '⚠️', 'bg-amber-100', 'text-amber-600');
+                return;
+            }
+
+            try {
+                const pptx = new PptxGenJS();
+                pptx.layout = "LAYOUT_16x9";
+                pptx.author = "Bệnh viện ĐKKV Cầu Ngang";
+                pptx.company = "Sở Y tế Trà Vinh - BVĐKKV Cầu Ngang";
+
+                // Slide 1: Trang bìa
+                const slide1 = pptx.addSlide();
+                slide1.background = { color: "0F172A" }; // Slate 900
+                
+                slide1.addText("SỞ Y TẾ TRÀ VINH • BỆNH VIỆN ĐKKV CẦU NGANG", {
+                    x: 0.8, y: 1.2, w: "85%", h: 0.5,
+                    fontSize: 14, color: "94A3B8", bold: true
+                });
+
+                slide1.addText(meetingName.toUpperCase(), {
+                    x: 0.8, y: 1.8, w: "85%", h: 1.8,
+                    fontSize: 28, color: "38BDF8", bold: true, wrap: true
+                });
+
+                slide1.addText(`Báo cáo tổng hợp tự động bởi Trợ lý AI BVĐKKV Cầu Ngang\nNgày tạo: ${new Date().toLocaleDateString('vi-VN')}`, {
+                    x: 0.8, y: 4.8, w: "85%", h: 1.0,
+                    fontSize: 13, color: "E2E8F0"
+                });
+
+                // Tách các slide theo từ khóa [SLIDE x] hoặc ngắt mục
+                const slideBlocks = text.split(/(?=\[SLIDE\s*\d+\]|Slide\s*\d+:)/i).filter(b => b.trim().length > 10);
+
+                if (slideBlocks.length > 0) {
+                    slideBlocks.forEach((block, idx) => {
+                        const lines = block.split("\n").map(l => l.trim()).filter(Boolean);
+                        const slideTitle = lines[0].replace(/\[|\]/g, "");
+                        const bodyLines = lines.slice(1);
+
+                        const slide = pptx.addSlide();
+                        slide.background = { color: "F8FAFC" };
+
+                        // Banner tiêu đề slide
+                        slide.addShape(pptx.ShapeType.rect, {
+                            x: 0, y: 0, w: "100%", h: 1.1,
+                            fill: { color: "1E293B" }
+                        });
+
+                        slide.addText(slideTitle, {
+                            x: 0.8, y: 0.25, w: "85%", h: 0.6,
+                            fontSize: 18, color: "FFFFFF", bold: true
+                        });
+
+                        slide.addText("Bệnh viện ĐKKV Cầu Ngang", {
+                            x: "75%", y: 0.35, w: "20%", h: 0.4,
+                            fontSize: 10, color: "94A3B8", align: "right"
+                        });
+
+                        // Nội dung slide
+                        const bullets = bodyLines.map(l => ({
+                            text: l.replace(/^[-*•]\s*/, ""),
+                            options: { fontSize: 14, color: "1E293B", bullet: true, breakLine: true, spaceAfter: 8 }
+                        }));
+
+                        if (bullets.length > 0) {
+                            slide.addText(bullets, {
+                                x: 0.8, y: 1.6, w: "85%", h: 4.8,
+                                wrap: true, valign: "top"
+                            });
+                        }
+                    });
+                } else {
+                    // Nếu văn bản thông thường, chia thành từng slide tóm tắt
+                    const chunks = text.split("\n\n").filter(c => c.trim().length > 20);
+                    chunks.slice(0, 5).forEach((chunk, i) => {
+                        const slide = pptx.addSlide();
+                        slide.background = { color: "F8FAFC" };
+                        
+                        slide.addShape(pptx.ShapeType.rect, {
+                            x: 0, y: 0, w: "100%", h: 1.0,
+                            fill: { color: "1E293B" }
+                        });
+                        slide.addText(`${meetingName} - Phần ${i+1}`, {
+                            x: 0.8, y: 0.2, w: "80%", h: 0.6,
+                            fontSize: 18, color: "38BDF8", bold: true
+                        });
+                        slide.addText(chunk, {
+                            x: 0.8, y: 1.5, w: "85%", h: 4.8,
+                            fontSize: 14, color: "334155", wrap: true
+                        });
+                    });
+                }
+
+                const safeName = meetingName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
+                pptx.writeFile({ fileName: `Slide_${safeName}_${new Date().toISOString().slice(0,10)}.pptx` });
+                showNotification('Xuất Slide thành công', 'File trình chiếu PowerPoint (.pptx) đã được tải về máy của bạn!', '📊', 'bg-amber-100', 'text-amber-700');
+
+            } catch (err) {
+                console.error(err);
+                showNotification('Lỗi xuất PowerPoint', 'Không thể tạo file PPTX: ' + err.message, '❌', 'bg-rose-100', 'text-rose-600');
+            }
+        }
+
+        // 9. Sao chép và Xuất file Word (.doc)
         function copyOfficialDoc() {
             const text = document.getElementById('officialDocContent').value;
-            copyTextToClipboard(text, 'Đã sao chép toàn bộ văn bản công văn vào khay nhớ tạm!');
+            copyTextToClipboard(text, 'Đã sao chép toàn bộ văn bản vào khay nhớ tạm!');
         }
 
         function downloadOfficialDoc() {
             const text = document.getElementById('officialDocContent').value;
-            const blob = new Blob([text], {type: 'application/msword;charset=utf-8'});
+            const meetingName = document.getElementById('meetingNameInput').value.trim() || "Cuoc_hop";
+            const safeName = meetingName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
+            
+            // Đóng gói HTML chuẩn Word để giữ đúng định dạng và font tiếng Việt
+            const wordHtml = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head><meta charset='utf-8'><title>${meetingName}</title>
+                <style>
+                    body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.3; }
+                    table { border-collapse: collapse; width: 100%; }
+                    th, td { border: 1px solid black; padding: 6px; text-align: left; }
+                </style>
+                </head>
+                <body>
+                    <pre style="font-family: 'Times New Roman', serif; font-size: 13pt; white-space: pre-wrap;">${text}</pre>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Van_ban_cuoc_hop_${new Date().toISOString().slice(0, 10)}.doc`;
+            link.download = `${currentDocumentType.toUpperCase()}_${safeName}_${new Date().toISOString().slice(0,10)}.doc`;
             link.click();
             URL.revokeObjectURL(link.href);
         }
@@ -784,10 +1156,12 @@
         }
 
         function downloadTotalTranscript() {
-            const blob = new Blob([combinedMeetingText], {type: 'text/plain;charset=utf-8'});
+            const meetingName = document.getElementById('meetingNameInput').value.trim() || "Cuoc_hop";
+            const safeName = meetingName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
+            const blob = new Blob([combinedMeetingText], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Tong_hop_cuoc_hop_${new Date().toISOString().slice(0, 10)}.txt`;
+            link.download = `Tong_hop_${safeName}_${new Date().toISOString().slice(0,10)}.txt`;
             link.click();
             URL.revokeObjectURL(link.href);
         }
@@ -822,5 +1196,4 @@
         }
     </script>
 </body>
-
 </html>
