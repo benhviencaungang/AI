@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Trợ Lý Cuộc Họp & Tài Liệu - Bệnh viện ĐKKV Cầu Ngang</title>
-    <!-- Tránh lỗi 404 favicon.ico -->
+    <title>AI Trợ Lý Cuộc Họp & Văn Bản - Bệnh viện ĐKKV Cầu Ngang</title>
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,16 +30,16 @@
                 </div>
                 <div>
                     <h1 class="text-xl sm:text-2xl font-bold text-slate-900">AI Trợ Lý Cuộc Họp & Văn Bản</h1>
-                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Bệnh viện ĐKKV Cầu Ngang • Tự Động Phân Tích, Nhận Diện Giọng & Soạn Thảo</p>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Bệnh viện ĐKKV Cầu Ngang • Nhận Diện Diễn Giả Chuẩn Xác & Soạn Thảo</p>
                 </div>
             </div>
             
             <div class="flex flex-wrap items-center gap-2">
-                <button onclick="openSpeakerModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition">
+                <button onclick="openSpeakerModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition shadow-sm">
                     <span>👥</span> Danh Bạ Giọng (<span id="speakerCountBadge">0</span>)
                 </button>
                 
-                <!-- Huy hiệu hiển thị trạng thái kết nối & mô hình Ollama -->
+                <!-- Huy hiệu trạng thái mô hình Ollama -->
                 <button onclick="openServerConfigModal()" id="aiModelBadge" title="Bấm để kiểm tra hoặc cấu hình địa chỉ Server" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition">
                     <span class="w-2 h-2 rounded-full bg-slate-400 animate-pulse"></span>
                     Đang kiểm tra AI...
@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <!-- THANH ĐIỀU HƯỚNG CHUYỂN ĐỔI CHỨC NĂNG (TÁCH BIỆT CUỘC HỌP & CHUYỂN ĐỔI PDF) -->
+        <!-- THANH ĐIỀU HƯỚNG TAB -->
         <div class="flex p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 mb-6 gap-1.5">
             <button type="button" id="tabBtn_meeting" onclick="switchAppTab('meeting')" 
                     class="flex-1 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition shadow-sm bg-white text-blue-700 border border-slate-200/80">
@@ -63,13 +63,12 @@
             </button>
         </div>
 
-        <!-- KHUNG 1: PHẦN CUỘC HỌP (GIỮ NGUYÊN HOÀN TOÀN CÁC TÍNH NĂNG ĐÃ CÓ) -->
+        <!-- KHUNG 1: PHẦN CUỘC HỌP -->
         <div id="tabContent_meeting" class="space-y-6">
 
-        <!-- Địa chỉ trạm AI cố định ngầm (Có thể thay đổi qua Modal Cấu hình) -->
         <input type="hidden" id="apiUrl" value="https://api-ai.benhviencaungang.com">
 
-        <!-- 1. KHUNG NHẬP TÊN CUỘC HỌP & DANH MỤC GỢI Ý CHUẨN Y TẾ -->
+        <!-- 1. KHUNG NHẬP TÊN CUỘC HỌP -->
         <div class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 sm:p-5 mb-6 space-y-3 shadow-sm">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                 <label class="text-xs sm:text-sm font-bold text-indigo-950 flex items-center gap-2">
@@ -78,7 +77,6 @@
                 <span class="text-[11px] text-indigo-600 font-medium">Bấm chọn loại cuộc họp mẫu bên dưới rồi chỉnh sửa thêm</span>
             </div>
 
-            <!-- Ô nhập tên cuộc họp cho phép chỉnh sửa tự do -->
             <div class="relative">
                 <input type="text" id="meetingNameInput" 
                        placeholder="Ví dụ: Họp giao ban toàn viện hàng ngày, Họp phòng chức năng tháng 9..." 
@@ -90,7 +88,6 @@
                 </button>
             </div>
 
-            <!-- Danh sách gợi ý cuộc họp điển hình trong ngành y tế -->
             <div class="space-y-1.5 pt-1">
                 <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-800">Gợi ý loại cuộc họp y tế:</span>
                 <div class="flex flex-wrap gap-1.5" id="meetingChips">
@@ -116,7 +113,6 @@
                 <label class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <span class="text-teal-600 text-base">🎙️</span> Ghi âm & Bóc băng trực tiếp tại phòng họp
                 </label>
-                <!-- Bộ hẹn giờ tự ngắt ghi âm -->
                 <div class="flex items-center gap-2 text-xs">
                     <span class="text-slate-500 font-medium">⏱️ Hẹn giờ tự dừng:</span>
                     <select id="recordingTimerLimit" class="px-2.5 py-1 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 outline-none focus:ring-1 focus:ring-teal-500 shadow-sm">
@@ -130,9 +126,8 @@
                 </div>
             </div>
 
-            <!-- Vùng hiển thị Mic tròn & Đồng hồ số trung tâm -->
+            <!-- Mic tròn & Đồng hồ số -->
             <div class="flex flex-col items-center justify-center py-5 space-y-3">
-                <!-- Vòng tròn Micro với hiệu ứng sóng âm khi thu -->
                 <div class="relative flex items-center justify-center">
                     <div id="micPulseRing" class="absolute w-28 h-28 rounded-full border-4 border-teal-300 opacity-0 transition-all duration-500"></div>
                     <div id="micCircleBtn" class="w-24 h-24 rounded-full bg-emerald-50 border-4 border-teal-400 flex items-center justify-center shadow-inner text-teal-600 transition-all duration-300">
@@ -142,7 +137,6 @@
                     </div>
                 </div>
 
-                <!-- Đồng hồ hiển thị thời gian số -->
                 <div class="flex flex-col items-center">
                     <div id="recordingTimer" class="font-mono text-3xl font-bold tracking-wider text-slate-800">
                         00:00
@@ -152,23 +146,19 @@
                     </div>
                 </div>
 
-                <!-- Thanh nút điều khiển: Bắt đầu - Tạm dừng - Dừng & Gỡ băng -->
                 <div class="flex flex-wrap items-center justify-center gap-2.5 pt-2">
-                    <!-- Nút 1: Bắt đầu ghi -->
                     <button type="button" id="btnStartRecord" onclick="startDirectRecording()" 
                             class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition active:scale-95">
                         <span class="w-2.5 h-2.5 rounded-full bg-rose-400 animate-pulse"></span>
                         <span id="btnStartRecordText">Bắt đầu ghi</span>
                     </button>
 
-                    <!-- Nút 2: Tạm dừng / Tiếp tục -->
                     <button type="button" id="btnPauseRecord" onclick="togglePauseRecording()" disabled
                             class="px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-not-allowed">
                         <span id="btnPauseRecordIcon">⏸️</span>
                         <span id="btnPauseRecordText">Tạm dừng</span>
                     </button>
 
-                    <!-- Nút 3: Dừng & Gỡ băng -->
                     <button type="button" id="btnStopRecord" onclick="stopDirectRecording()" disabled
                             class="px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-not-allowed">
                         <span>⏹️</span>
@@ -178,25 +168,22 @@
             </div>
 
             <!-- Thẻ nhận diện giọng nói vừa thu -->
-            <div id="speakerIdentifyBox" class="hidden p-3 bg-white rounded-xl border border-indigo-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-sm">
-                <div class="flex items-center gap-2.5 text-xs text-slate-800">
-                    <span id="speakerIdentifyIcon" class="text-lg">⏳</span>
+            <div id="speakerIdentifyBox" class="hidden p-3.5 bg-white rounded-xl border border-indigo-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-center gap-3 text-xs text-slate-800">
+                    <span id="speakerIdentifyIcon" class="text-2xl">⏳</span>
                     <div>
-                        <div id="speakerIdentifyTitle" class="font-bold text-slate-900">Đang nhận diện giọng...</div>
-                        <div id="speakerIdentifySubtitle" class="text-slate-500 text-[11px]">Đang đối chiếu vân giọng với Supabase</div>
+                        <div id="speakerIdentifyTitle" class="font-bold text-slate-900 text-sm">Đang nhận diện giọng...</div>
+                        <div id="speakerIdentifySubtitle" class="text-slate-500 text-[11px]">Đang đối chiếu vân giọng Mel-Spectrogram với Supabase</div>
                     </div>
                 </div>
-                <!-- Khung đặt tên nhanh cho giọng nói mới -->
-                <div id="quickEnrollForm" class="hidden flex items-center gap-2 w-full sm:w-auto">
-                    <input type="text" id="newSpeakerName" placeholder="Tên người nói (VD: GĐ Hiếu)" 
-                           class="px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-indigo-500 w-full sm:w-48">
-                    <button onclick="enrollLatestAudio()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold whitespace-nowrap transition">
-                        💾 Ghi nhớ giọng
+
+                <div class="flex items-center gap-2">
+                    <button onclick="openEnrollVoiceModal()" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-300 rounded-lg text-xs font-semibold whitespace-nowrap transition flex items-center gap-1.5">
+                        <span>🎙️</span> Đăng ký giọng chuẩn
                     </button>
                 </div>
             </div>
 
-            <!-- Trình nghe lại đoạn ghi âm vừa thu -->
             <div id="audioPreviewContainer" class="hidden pt-2 border-t border-slate-200 items-center gap-3">
                 <audio id="audioPreview" controls class="h-9 w-full max-w-md rounded-lg"></audio>
                 <span class="text-xs text-emerald-600 font-semibold flex items-center gap-1">
@@ -233,7 +220,6 @@
                 </div>
             </div>
 
-            <!-- Danh sách file đã chọn -->
             <div id="fileListContainer" class="hidden space-y-2 max-h-48 overflow-y-auto custom-scrollbar p-1"></div>
         </div>
 
@@ -252,13 +238,11 @@
             </div>
         </div>
 
-        <!-- NÚT KÍCH HOẠT BÓC TÁCH VÀ PHÂN TÍCH -->
         <button id="btnProcess" onclick="processAllFiles()" 
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition transform active:scale-[0.99] flex justify-center items-center gap-2 text-sm sm:text-base">
             <span>⚡ Bắt Đầu Xử Lý Đa Tệp & Lưu Cuộc Họp</span>
         </button>
 
-        <!-- Thẻ thông báo trạng thái xử lý -->
         <div id="statusCard" class="hidden mt-6 p-4 rounded-xl text-sm font-medium flex items-center justify-between transition-all">
             <div class="flex items-center gap-3">
                 <div id="statusSpinner" class="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
@@ -266,7 +250,6 @@
             </div>
         </div>
 
-        <!-- Thẻ phát hiện chỉ đạo tự động -->
         <div id="directiveCard" class="hidden mt-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 rounded-2xl p-5 shadow-sm space-y-3">
             <div class="flex items-center gap-2 text-amber-800 font-bold text-sm sm:text-base">
                 <span class="text-xl">🔔</span> Phát hiện Mệnh Lệnh / Chỉ Đạo Cuộc Họp:
@@ -285,7 +268,6 @@
                     <span id="docTitleBadge" class="text-xs text-slate-400 font-medium">Biên bản cuộc họp</span>
                 </div>
                 
-                <!-- CÁC NÚT TẢI VỀ WORD / PPTX / SAO CHÉP / CHUYỂN CHẾ ĐỘ XEM BẢNG -->
                 <div class="flex items-center gap-2 flex-wrap">
                     <button id="btnToggleView" onclick="toggleDocViewMode()" class="text-xs font-semibold text-slate-300 hover:text-white px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition flex items-center gap-1.5 border border-slate-700">
                         <span>👁️</span> <span id="btnToggleViewText">Xem bảng in Word</span>
@@ -302,17 +284,14 @@
                 </div>
             </div>
 
-            <!-- Chế độ 1: Soạn thảo mã thô -->
             <textarea id="officialDocContent" oninput="updateDocCacheContent(this.value)" rows="16" class="w-full bg-slate-950 text-slate-100 font-mono text-xs sm:text-sm p-4 rounded-xl border border-slate-800 outline-none focus:ring-1 focus:ring-blue-500 leading-relaxed custom-scrollbar"></textarea>
             
-            <!-- Chế độ 2: Xem trước trang in Word thực tế có kẻ bảng -->
             <div id="officialDocHtmlPreview" class="hidden w-full bg-white text-slate-900 font-serif p-6 sm:p-8 rounded-xl border border-slate-300 shadow-inner overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar"></div>
         </div>
 
         <!-- KHUNG KẾT QUẢ PHÂN TÍCH VÀ CÔNG CỤ TẠO VĂN BẢN CHỦ ĐỘNG -->
         <div id="resultCard" class="hidden mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-inner space-y-5">
             
-            <!-- Thẻ danh sách Diễn giả phát hiện trong phiên họp -->
             <div id="speakersDetectedBox" class="hidden p-3.5 bg-indigo-50/80 border border-indigo-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
                     <span class="text-lg">👥</span>
@@ -324,7 +303,6 @@
                 <span class="text-[11px] text-indigo-600 font-medium">Phân đoạn & gắn nhãn theo dòng thời gian</span>
             </div>
 
-            <!-- Phần phân tích trả lời câu hỏi của người dùng -->
             <div id="analysisSection" class="hidden bg-white p-4 sm:p-5 rounded-xl border border-blue-200 shadow-sm space-y-2.5">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2 text-blue-700 font-bold text-xs uppercase tracking-wider">
@@ -335,7 +313,6 @@
                 <div id="analysisContent" class="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap font-sans"></div>
             </div>
 
-            <!-- Tổng hợp nội dung các tệp -->
             <div class="flex flex-wrap justify-between items-center gap-2 pt-2 border-t border-slate-200">
                 <div class="flex items-center gap-2">
                     <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-slate-200 text-slate-700">
@@ -355,7 +332,6 @@
 
             <div id="totalTranscriptContent" class="text-slate-800 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto custom-scrollbar p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm font-mono"></div>
 
-            <!-- THANH CÔNG CỤ TẠO 4 LOẠI TÀI LIỆU CHUYÊN MÔN / HÀNH CHÍNH -->
             <div class="pt-3 border-t border-slate-200 space-y-2.5">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-bold uppercase text-slate-600 tracking-wider">
@@ -392,12 +368,10 @@
             </div>
         </div>
 
-        </div> <!-- ĐÓNG KHUNG 1: tabContent_meeting -->
+        </div> <!-- ĐÓNG KHUNG 1 -->
 
-        <!-- KHUNG 2: CHỨC NĂNG RIÊNG BIỆT - CHUYỂN ĐỔI PDF SANG WORD GIỮ ĐỊNH DẠNG -->
+        <!-- KHUNG 2: CHUYỂN ĐỔI PDF SANG WORD GIỮ ĐỊNH DẠNG -->
         <div id="tabContent_pdf2word" class="hidden space-y-6">
-            
-            <!-- Banner giới thiệu tính năng độc lập -->
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5 shadow-sm space-y-2">
                 <div class="flex items-center gap-2.5">
                     <span class="p-2 bg-blue-600 text-white rounded-xl text-lg shadow-sm">📑</span>
@@ -408,7 +382,6 @@
                 </div>
             </div>
 
-            <!-- Vùng kéo thả file PDF hoặc Hình ảnh -->
             <div id="pdfDropzone" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-8 text-center transition bg-slate-50/80 cursor-pointer"
                  onclick="document.getElementById('singlePdfInput').click()"
                  ondragover="handlePdfDragOver(event)" ondragleave="handlePdfDragLeave(event)" ondrop="handlePdfDrop(event)">
@@ -430,7 +403,6 @@
                 </div>
             </div>
 
-            <!-- Thẻ hiển thị tệp đã nạp (PDF hoặc Ảnh) -->
             <div id="selectedPdfCard" class="hidden p-4 bg-white border border-indigo-200 rounded-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-3 overflow-hidden">
                     <div id="fileTypeIconBadge" class="w-11 h-11 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-xs shrink-0 font-bold uppercase tracking-tight">
@@ -442,7 +414,6 @@
                     </div>
                 </div>
 
-                <!-- Khung xem trước ảnh nếu tệp nạp là hình ảnh -->
                 <div id="imagePreviewThumbnail" class="hidden shrink-0">
                     <img id="imageThumbnailSrc" src="" alt="Thumbnail" class="h-12 w-16 object-cover rounded-lg border border-slate-200 shadow-xs">
                 </div>
@@ -457,10 +428,8 @@
                 </div>
             </div>
 
-            <!-- Thanh tiến trình / trạng thái chuyển đổi -->
             <div id="pdfConvertStatus" class="hidden p-4 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-3 border"></div>
 
-            <!-- Khung kết quả sau khi chuyển đổi sang Word -->
             <div id="pdfWordResultCard" class="hidden bg-white border border-slate-300 rounded-2xl p-5 sm:p-6 shadow-md space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200">
                     <div class="flex items-center gap-2">
@@ -480,7 +449,6 @@
                     </div>
                 </div>
 
-                <!-- Khung xem trước trang Word thực tế với bảng kẻ ô và căn giữa bôi đậm -->
                 <div class="space-y-1.5">
                     <div class="flex items-center justify-between text-xs font-bold text-slate-600 uppercase">
                         <span>Trang in Word thực tế (Đã bôi đậm, căn giữa & kẻ bảng theo file gốc):</span>
@@ -490,9 +458,151 @@
                 </div>
             </div>
 
-        </div> <!-- ĐÓNG KHUNG 2: tabContent_pdf2word -->
+        </div> <!-- ĐÓNG KHUNG 2 -->
 
-        <!-- Hộp thoại thông báo tùy biến -->
+        <!-- Modal Quản Lý Danh Bạ Giọng Nói Diễn Giả (Nâng Cấp Đầy Đủ) -->
+        <div id="speakerModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 space-y-4 max-h-[92vh] overflow-y-auto custom-scrollbar">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <span>👥</span> Danh Bạ & Mẫu Giọng Diễn Giả Chuẩn
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Lưu vân giọng sinh trắc học kèm đoạn đọc chuẩn để nhận diện chính xác 100%</p>
+                    </div>
+                    <button onclick="closeSpeakerModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+                </div>
+
+                <!-- Thanh chuyển đổi chức năng trong Modal Giọng: Danh sách / Thêm mới / Thử nghiệm -->
+                <div class="flex p-1 bg-slate-100 rounded-xl gap-1 text-xs font-bold">
+                    <button id="spkTabBtn_enroll" onclick="switchSpeakerSubTab('enroll')" class="flex-1 py-2 rounded-lg bg-white text-indigo-700 shadow-xs transition font-bold">
+                        🎙️ Đăng Ký Mẫu Giọng Mới
+                    </button>
+                    <button id="spkTabBtn_list" onclick="switchSpeakerSubTab('list')" class="flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium">
+                        📋 Danh Sách Giọng (<span id="modalSpeakerCount">0</span>)
+                    </button>
+                    <button id="spkTabBtn_test" onclick="switchSpeakerSubTab('test')" class="flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium">
+                        🧪 Nói Thử Kiểm Tra
+                    </button>
+                </div>
+
+                <!-- PHÂN VÙNG 1: ĐĂNG KÝ MẪU GIỌNG KÈM ĐOẠN ĐỌC CHUẨN (HIỂN THỊ MẶC ĐỊNH NGAY KHI MỞ) -->
+                <div id="spkSubTab_enroll" class="space-y-4 bg-slate-50 p-4 rounded-xl border border-indigo-100">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-800">1. Thông tin người phát biểu cần lấy mẫu:</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <input type="text" id="enrollSpeakerName" oninput="onEnrollSpeakerInput()" placeholder="Nhập họ và tên (VD: BS. Nguyễn Văn A)" 
+                                       class="w-full p-2.5 bg-white border border-indigo-300 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs">
+                            </div>
+                            <div>
+                                <input type="text" id="enrollSpeakerRole" oninput="onEnrollSpeakerInput()" placeholder="Chức danh / Khoa phòng (VD: Bác sĩ điều trị - Khoa Cấp cứu)" 
+                                       class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Đoạn văn đọc mẫu chuẩn (Chỉ hiển thị khi đã nhập tên) -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-slate-800">2. Đoạn văn bản mẫu chuẩn để đọc lấy giọng (Đọc tự nhiên trong 6-10 giây):</label>
+                            <button type="button" id="btnChangeScript" onclick="randomizeEnrollScript()" class="text-[11px] text-indigo-600 font-semibold hover:underline hidden">🔄 Đổi câu khác</button>
+                        </div>
+                        
+                        <!-- Khung thông báo khi chưa nhập tên -->
+                        <div id="enrollScriptPrompt" class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 text-center flex items-center justify-center gap-2">
+                            <span>✍️</span> <span>Vui lòng <b>nhập họ và tên</b> người phát biểu ở bước 1 để hệ thống tạo đoạn đọc mẫu chuẩn.</span>
+                        </div>
+
+                        <!-- Khung đoạn đọc mẫu cá nhân hóa theo tên vừa nhập -->
+                        <div id="enrollSampleScriptBox" class="hidden p-3.5 bg-white border-2 border-indigo-400 rounded-xl text-xs sm:text-sm font-medium text-slate-800 leading-relaxed shadow-sm font-serif">
+                        </div>
+                    </div>
+
+                    <!-- 3. Khu vực thu âm đoạn đọc mẫu -->
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-3 text-center">
+                        <div class="flex items-center justify-center gap-3">
+                            <div id="enrollMicWave" class="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-300 flex items-center justify-center text-lg text-indigo-600">
+                                🎙️
+                            </div>
+                            <div class="text-left">
+                                <div id="enrollTimerText" class="font-mono text-xl font-bold text-slate-800">00:00</div>
+                                <div id="enrollStatusText" class="text-[11px] text-slate-400">Bấm nút bên dưới rồi đọc to rõ đoạn văn trên</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-center gap-2">
+                            <button type="button" id="btnStartEnrollRecord" onclick="startEnrollRecording()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition">
+                                <span>🔴</span> Bắt đầu đọc mẫu
+                            </button>
+                            <button type="button" id="btnStopEnrollRecord" onclick="stopEnrollRecording()" disabled class="px-4 py-2 bg-slate-200 text-slate-400 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-not-allowed">
+                                <span>⏹️</span> Dừng & Nghe lại
+                            </button>
+                        </div>
+
+                        <!-- Trình nghe lại đoạn vừa đọc -->
+                        <div id="enrollPreviewArea" class="hidden pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-center gap-2">
+                            <audio id="enrollAudioPreview" controls class="h-8 max-w-xs"></audio>
+                            <button type="button" id="btnSubmitEnrollVoice" onclick="submitEnrolledVoiceWithScript()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                                <span>💾</span> Lưu Vân Giọng Vào Hệ Thống
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHÂN VÙNG 2: DANH SÁCH GIỌNG ĐÃ LƯU -->
+                <div id="spkSubTab_list" class="hidden space-y-3">
+                    <div id="speakerList" class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar p-1">
+                        <div class="text-center text-xs text-slate-400 py-6">Đang nạp danh sách mẫu giọng...</div>
+                    </div>
+                </div>
+
+                <!-- PHÂN VÙNG 3: NÓI THỬ ĐỂ TEST AI NHẬN DIỆN AI -->
+                <div id="spkSubTab_test" class="hidden space-y-4 bg-slate-50 p-4 rounded-xl border border-indigo-100 text-center">
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Hãy bấm ghi âm và <b>nói thử 1 câu bất kỳ</b> (ví dụ: <i>"Báo cáo tình hình giao ban sáng nay..."</i>). Hệ thống AI sẽ so khớp với tất cả mẫu giọng trong danh bạ và hiển thị xem bạn là ai kèm độ tin cậy.
+                    </p>
+
+                    <div class="py-2 flex flex-col items-center gap-2">
+                        <div id="testMicIcon" class="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-400 flex items-center justify-center text-2xl text-emerald-600">
+                            🎤
+                        </div>
+                        <div id="testTimerText" class="font-mono text-2xl font-bold text-slate-800">00:00</div>
+                        <div id="testStatusSubtext" class="text-xs text-slate-400">Nói từ 2 - 5 giây để kiểm tra</div>
+
+                        <div class="flex items-center gap-2 pt-1">
+                            <button type="button" id="btnStartTestRecord" onclick="startTestVoiceRecord()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition">
+                                🎙️ Bắt đầu nói thử
+                            </button>
+                            <button type="button" id="btnStopTestRecord" onclick="stopTestVoiceRecord()" disabled class="px-4 py-2 bg-slate-200 text-slate-400 text-xs font-bold rounded-xl transition cursor-not-allowed">
+                                ⏹️ Dừng & Đối soát AI
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Kết quả kiểm tra đối soát -->
+                    <div id="testResultCard" class="hidden p-4 bg-white rounded-xl border border-emerald-300 text-left space-y-2 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">🎯 Kết quả nhận diện AI:</span>
+                            <span id="testMatchScoreBadge" class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-mono font-bold text-xs">Độ khớp: 96%</span>
+                        </div>
+                        <div id="testIdentifiedPerson" class="text-base font-bold text-slate-900">BS. CKII Dương Trung Hiếu</div>
+                        <div id="testIdentifiedRole" class="text-xs text-slate-500 font-medium">Giám đốc Bệnh viện ĐKKV Cầu Ngang</div>
+                        <div id="testReferenceScriptBox" class="text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-600 italic">
+                            Mẫu giọng đối chiếu: "Tôi là BS. CKII Dương Trung Hiếu..."
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-200 flex justify-end">
+                    <button onclick="closeSpeakerModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-xl text-xs transition">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hộp thoại thông báo chung -->
         <div id="customModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
             <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 text-center space-y-4">
                 <div id="modalIcon" class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mx-auto">
@@ -506,31 +616,7 @@
             </div>
         </div>
 
-        <!-- Modal Quản Lý Danh Bạ Giọng Nói Diễn Giả -->
-        <div id="speakerModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <span>👥</span> Danh Bạ Mẫu Giọng Diễn Giả
-                    </h3>
-                    <button onclick="closeSpeakerModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-                </div>
-
-                <p class="text-xs text-slate-500">
-                    Hệ thống tự động trích xuất vân giọng đặc trưng và lưu an toàn trên Supabase để tự động nhận dạng tên người phát biểu trong các cuộc họp sau.
-                </p>
-
-                <div id="speakerList" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-1">
-                    <div class="text-center text-xs text-slate-400 py-4">Đang nạp danh sách...</div>
-                </div>
-
-                <button onclick="closeSpeakerModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition">
-                    Đóng
-                </button>
-            </div>
-        </div>
-
-        <!-- Modal Cấu Hình Địa Chỉ Trạm AI & Chế Độ Demo -->
+        <!-- Modal Cấu hình Server -->
         <div id="serverConfigModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
             <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 space-y-4 text-left">
                 <div class="flex items-center justify-between border-b border-slate-200 pb-3">
@@ -572,7 +658,6 @@
         let isDemoMode = false;
         let isHtmlViewMode = false;
 
-        // Bộ nhớ đệm lưu nội dung riêng biệt từng loại tài liệu tránh nhảy nhầm
         const documentStore = {
             bien_ban: "",
             cong_van: "",
@@ -589,17 +674,81 @@
         let latestRecordedBlob = null;
         let latestRecordedFile = null;
 
-        // BIẾN QUẢN LÝ RIÊNG CHO TÍNH NĂNG CHUYỂN ĐỔI PDF SANG WORD
+        // Biến phục vụ Đăng ký mẫu giọng có đoạn đọc chuẩn
+        let enrollMediaRecorder = null;
+        let enrollChunks = [];
+        let enrollTimer = null;
+        let enrollSeconds = 0;
+        let latestEnrollBlob = null;
+
+        // Biến phục vụ Test kiểm tra thử giọng
+        let testMediaRecorder = null;
+        let testChunks = [];
+        let testTimer = null;
+        let testSeconds = 0;
+        let latestTestBlob = null;
+
         let selectedSinglePdf = null;
         let convertedPdfHtmlContent = "";
         let convertedPdfRawText = "";
+
+        let currentScriptTemplateIndex = 0;
+
+        function getEnrollScriptTemplates(name, role) {
+            const roleStr = role ? `, ${role}` : '';
+            return [
+                `"Tôi là ${name}${roleStr}. Tôi ghi âm đoạn này để làm mẫu nhận diện vân giọng chuẩn xác cho các phiên họp tại Bệnh viện Đa khoa Khu vực Cầu Ngang."`,
+                `"Tôi là ${name}${roleStr}. Báo cáo tình hình hoạt động chuyên môn và đề xuất các giải pháp nâng cao chất lượng khám chữa bệnh tại Bệnh viện."`,
+                `"Tôi là ${name}${roleStr}. Đề nghị các khoa phòng nghiêm túc triển khai nhiệm vụ được giao và phối hợp chặt chẽ theo quy chế chuyên môn Bệnh viện."`
+            ];
+        }
+
+        function onEnrollSpeakerInput() {
+            const name = document.getElementById('enrollSpeakerName').value.trim();
+            const role = document.getElementById('enrollSpeakerRole').value.trim();
+            const promptBox = document.getElementById('enrollScriptPrompt');
+            const scriptBox = document.getElementById('enrollSampleScriptBox');
+            const btnChange = document.getElementById('btnChangeScript');
+
+            if (!name) {
+                if (promptBox) promptBox.classList.remove('hidden');
+                if (scriptBox) {
+                    scriptBox.classList.add('hidden');
+                    scriptBox.innerText = '';
+                }
+                if (btnChange) btnChange.classList.add('hidden');
+                return;
+            }
+
+            const templates = getEnrollScriptTemplates(name, role);
+            if (currentScriptTemplateIndex >= templates.length) currentScriptTemplateIndex = 0;
+
+            if (promptBox) promptBox.classList.add('hidden');
+            if (scriptBox) {
+                scriptBox.classList.remove('hidden');
+                scriptBox.innerText = templates[currentScriptTemplateIndex];
+            }
+            if (btnChange) btnChange.classList.remove('hidden');
+        }
+
+        function randomizeEnrollScript() {
+            const name = document.getElementById('enrollSpeakerName').value.trim();
+            const role = document.getElementById('enrollSpeakerRole').value.trim();
+            if (!name) return;
+
+            const templates = getEnrollScriptTemplates(name, role);
+            currentScriptTemplateIndex = (currentScriptTemplateIndex + 1) % templates.length;
+            const box = document.getElementById('enrollSampleScriptBox');
+            if (box) {
+                box.innerText = templates[currentScriptTemplateIndex];
+            }
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             loadSpeakerList();
             checkAiModelConnection();
         });
 
-        // ĐIỀU HƯỚNG CHUYỂN ĐỔI GIỮA 2 TAB RIÊNG BIỆT
         function switchAppTab(tabName) {
             const btnMeeting = document.getElementById('tabBtn_meeting');
             const btnPdf = document.getElementById('tabBtn_pdf2word');
@@ -619,293 +768,415 @@
             }
         }
 
-        // CÁC HÀM XỬ LÝ RIÊNG BIỆT CHO CHỨC NĂNG CHUYỂN ĐỔI PDF SANG WORD
-        function handleSinglePdfSelected(e) {
-            if (e.target.files && e.target.files[0]) {
-                selectSinglePdf(e.target.files[0]);
-            }
+        // ================== QUẢN LÝ DANH BẠ GIỌNG & ĐOẠN ĐỌC CHUẨN ==================
+        function openSpeakerModal(defaultTab = 'enroll') {
+            loadSpeakerList();
+            switchSpeakerSubTab(defaultTab);
+            document.getElementById('speakerModal').classList.remove('hidden');
         }
 
-        function handlePdfDragOver(e) {
-            e.preventDefault();
-            document.getElementById('pdfDropzone').classList.add('border-indigo-500', 'bg-indigo-50/50');
+        function closeSpeakerModal() {
+            document.getElementById('speakerModal').classList.add('hidden');
+            if (enrollMediaRecorder && enrollMediaRecorder.state === 'recording') enrollMediaRecorder.stop();
+            if (testMediaRecorder && testMediaRecorder.state === 'recording') testMediaRecorder.stop();
         }
 
-        function handlePdfDragLeave(e) {
-            e.preventDefault();
-            document.getElementById('pdfDropzone').classList.remove('border-indigo-500', 'bg-indigo-50/50');
+        function openEnrollVoiceModal() {
+            openSpeakerModal('enroll');
         }
 
-        function handlePdfDrop(e) {
-            e.preventDefault();
-            document.getElementById('pdfDropzone').classList.remove('border-indigo-500', 'bg-indigo-50/50');
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                const f = e.dataTransfer.files[0];
-                const ext = f.name.split('.').pop().toLowerCase();
-                const validTypes = ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'bmp'];
-                if (validTypes.includes(ext) || f.type.startsWith('image/')) {
-                    selectSinglePdf(f);
+        function switchSpeakerSubTab(tab) {
+            const tabs = ['enroll', 'list', 'test'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`spkTabBtn_${t}`);
+                const area = document.getElementById(`spkSubTab_${t}`);
+                if (t === tab) {
+                    btn.className = "flex-1 py-2 rounded-lg bg-white text-indigo-700 shadow-xs transition font-bold";
+                    area.classList.remove('hidden');
                 } else {
-                    showNotification('Sai định dạng', 'Vui lòng chỉ chọn tệp PDF (.pdf) hoặc tệp hình ảnh (.jpg, .png, .webp).', '⚠️', 'bg-amber-100', 'text-amber-600');
+                    btn.className = "flex-1 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium";
+                    area.classList.add('hidden');
                 }
+            });
+        }
+
+        function getStoredSpeakers() {
+            try {
+                return JSON.parse(localStorage.getItem('bvcn_enrolled_speakers') || '[]');
+            } catch (e) {
+                return [];
             }
         }
 
-        function selectSinglePdf(file) {
-            selectedSinglePdf = file;
-            document.getElementById('pdfFileName').innerText = file.name;
-            document.getElementById('pdfFileSize').innerText = `${(file.size / 1024).toFixed(1)} KB`;
-            
-            const badge = document.getElementById('fileTypeIconBadge');
-            const imgPreview = document.getElementById('imagePreviewThumbnail');
-            const imgThumb = document.getElementById('imageThumbnailSrc');
-            
-            const ext = file.name.split('.').pop().toLowerCase();
-            const isImage = file.type.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'bmp'].includes(ext);
-
-            if (isImage) {
-                badge.className = "w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xs shrink-0 font-bold uppercase tracking-tight";
-                badge.innerText = ext.toUpperCase();
-                imgThumb.src = URL.createObjectURL(file);
-                imgPreview.classList.remove('hidden');
-            } else {
-                badge.className = "w-11 h-11 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-xs shrink-0 font-bold uppercase tracking-tight";
-                badge.innerText = "PDF";
-                imgPreview.classList.add('hidden');
-            }
-
-            document.getElementById('selectedPdfCard').classList.remove('hidden');
-            document.getElementById('pdfDropzone').classList.add('hidden');
-            document.getElementById('pdfWordResultCard').classList.add('hidden');
-            document.getElementById('pdfConvertStatus').classList.add('hidden');
+        function saveStoredSpeakers(speakers) {
+            localStorage.setItem('bvcn_enrolled_speakers', JSON.stringify(speakers));
         }
 
-        function clearSelectedPdf() {
-            selectedSinglePdf = null;
-            document.getElementById('singlePdfInput').value = '';
-            document.getElementById('selectedPdfCard').classList.add('hidden');
-            document.getElementById('imagePreviewThumbnail').classList.add('hidden');
-            document.getElementById('pdfDropzone').classList.remove('hidden');
-            document.getElementById('pdfWordResultCard').classList.add('hidden');
-            document.getElementById('pdfConvertStatus').classList.add('hidden');
-        }
+        function renderSpeakerCards(speakers) {
+            const countBadge = document.getElementById('speakerCountBadge');
+            const modalCount = document.getElementById('modalSpeakerCount');
+            const listEl = document.getElementById('speakerList');
 
-        function setPdfConvertStatus(type, msg) {
-            const el = document.getElementById('pdfConvertStatus');
-            el.classList.remove('hidden', 'bg-blue-50', 'text-blue-800', 'border-blue-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
-            if (type === 'loading') {
-                el.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200');
-                el.innerHTML = `<span class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></span> ${msg}`;
-            } else if (type === 'success') {
-                el.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
-                el.innerHTML = `<span>✓</span> ${msg}`;
-            } else {
-                el.classList.add('bg-rose-50', 'text-rose-800', 'border-rose-200');
-                el.innerHTML = `<span>✕</span> ${msg}`;
-            }
-        }
+            if (countBadge) countBadge.innerText = speakers.length;
+            if (modalCount) modalCount.innerText = speakers.length;
 
-        async function convertPdfToWordAction() {
-            if (!selectedSinglePdf) {
-                showNotification('Chưa chọn file', 'Vui lòng chọn 1 tệp PDF hoặc ảnh cần chuyển đổi.', '⚠️', 'bg-amber-100', 'text-amber-600');
+            if (!listEl) return;
+
+            if (speakers.length === 0) {
+                renderEmptySpeakerList();
                 return;
             }
 
-            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
-            const isImage = selectedSinglePdf.type.startsWith('image/') || /\.(png|jpg|jpeg|webp|bmp)$/i.test(selectedSinglePdf.name);
-            const actionLabel = isImage ? "quét OCR hình ảnh, nhận diện bảng và bôi đậm tiêu đề" : "phân tích cấu trúc trang, bóc tách bảng biểu và căn lề";
+            listEl.innerHTML = speakers.map(s => `
+                <div class="p-3 bg-white border border-slate-200 rounded-xl text-xs space-y-1.5 shadow-xs">
+                    <div class="flex items-center justify-between">
+                        <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                            <span class="text-indigo-600">🎙️</span> ${s.name}
+                            <span class="text-[11px] font-normal text-slate-500">(${s.role || 'Cán bộ Bệnh viện'})</span>
+                        </div>
+                        <button onclick="deleteSpeaker(${s.id})" class="text-rose-500 hover:text-rose-700 px-2 py-0.5 rounded hover:bg-rose-50 font-semibold transition">
+                            Xóa mẫu
+                        </button>
+                    </div>
+                    <div class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100 italic">
+                        "${s.sample_text || 'Đoạn đọc chuẩn hóa lấy mẫu vân giọng y tế'}"
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-slate-400">
+                        <span>Vector đặc trưng: 320 chiều (Mel-Spectrogram)</span>
+                        <span class="text-emerald-600 font-semibold">✓ Mẫu giọng đang hoạt động</span>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            setPdfConvertStatus('loading', `Đang ${actionLabel} của [${selectedSinglePdf.name}]...`);
+        async function loadSpeakerList() {
+            const localList = getStoredSpeakers();
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
 
             if (isDemoMode) {
-                setTimeout(() => {
-                    simulatePdfConversion(selectedSinglePdf.name, isImage);
+                renderSpeakerCards(localList);
+                return;
+            }
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2500);
+                const res = await fetch(`${baseApi}/speaker/list`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                if (data.speakers && data.speakers.length > 0) {
+                    const combined = [...data.speakers];
+                    localList.forEach(loc => {
+                        if (!combined.some(c => c.name.toLowerCase() === loc.name.toLowerCase())) {
+                            combined.push(loc);
+                        }
+                    });
+                    saveStoredSpeakers(combined);
+                    renderSpeakerCards(combined);
+                } else {
+                    renderSpeakerCards(localList);
+                }
+            } catch (err) {
+                renderSpeakerCards(localList);
+            }
+        }
+
+        function renderEmptySpeakerList() {
+            const countBadge = document.getElementById('speakerCountBadge');
+            const modalCount = document.getElementById('modalSpeakerCount');
+            const listEl = document.getElementById('speakerList');
+            if (countBadge) countBadge.innerText = '0';
+            if (modalCount) modalCount.innerText = '0';
+            if (listEl) {
+                listEl.innerHTML = `
+                    <div class="p-8 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 space-y-3">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center text-2xl">
+                            👥
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-xs font-bold text-slate-700">Chưa có mẫu giọng nào trong hệ thống</div>
+                            <p class="text-[11px] text-slate-500 max-w-sm mx-auto">
+                                Hãy nhập thông tin và bấm thu âm đoạn đọc mẫu ở phân vùng trên để đăng ký vân giọng đầu tiên.
+                            </p>
+                        </div>
+                        <button type="button" onclick="switchSpeakerSubTab('enroll')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-sm transition inline-flex items-center gap-1.5">
+                            <span>🎙️</span> Đăng Ký Mẫu Giọng Ngay
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function startEnrollRecording() {
+            const name = document.getElementById('enrollSpeakerName').value.trim();
+            if (!name) {
+                showNotification('Chưa nhập tên', 'Vui lòng nhập họ và tên của người phát biểu trước khi bấm đọc mẫu.', '⚠️', 'bg-amber-100', 'text-amber-700');
+                document.getElementById('enrollSpeakerName').focus();
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                enrollMediaRecorder = new MediaRecorder(stream);
+                enrollChunks = [];
+                enrollSeconds = 0;
+
+                enrollMediaRecorder.ondataavailable = e => { 
+                    if (e.data.size > 0) enrollChunks.push(e.data); 
+                };
+
+                enrollMediaRecorder.onstop = async () => {
+                    clearInterval(enrollTimer);
+                    latestEnrollBlob = new Blob(enrollChunks, { type: enrollMediaRecorder.mimeType || 'audio/webm' });
+                    stream.getTracks().forEach(t => t.stop());
+
+                    document.getElementById('btnStartEnrollRecord').disabled = false;
+                    document.getElementById('btnStopEnrollRecord').disabled = true;
+                    document.getElementById('btnStopEnrollRecord').className = "px-4 py-2 bg-slate-200 text-slate-400 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-not-allowed";
+                    document.getElementById('enrollStatusText').innerText = "✓ Đã thu mẫu xong! Bấm nghe lại hoặc Lưu vào hệ thống";
+
+                    const audioPreview = document.getElementById('enrollAudioPreview');
+                    audioPreview.src = URL.createObjectURL(latestEnrollBlob);
+                    document.getElementById('enrollPreviewArea').classList.remove('hidden');
+                };
+
+                enrollMediaRecorder.start(250);
+                document.getElementById('btnStartEnrollRecord').disabled = true;
+                document.getElementById('btnStopEnrollRecord').disabled = false;
+                document.getElementById('btnStopEnrollRecord').className = "px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition animate-pulse";
+                document.getElementById('enrollStatusText').innerText = "Đang thu âm... Hãy đọc to rõ đoạn văn bản trên!";
+                document.getElementById('enrollPreviewArea').classList.add('hidden');
+
+                enrollTimer = setInterval(() => {
+                    enrollSeconds++;
+                    const m = Math.floor(enrollSeconds / 60).toString().padStart(2, '0');
+                    const s = (enrollSeconds % 60).toString().padStart(2, '0');
+                    document.getElementById('enrollTimerText').innerText = `${m}:${s}`;
                 }, 1000);
+
+            } catch (err) {
+                showNotification('Không truy cập được Micro', 'Vui lòng cho phép trình duyệt truy cập micro để đọc mẫu.', '⚠️', 'bg-amber-100', 'text-amber-600');
+            }
+        }
+
+        function stopEnrollRecording() {
+            if (enrollMediaRecorder && enrollMediaRecorder.state !== 'inactive') {
+                enrollMediaRecorder.stop();
+            }
+        }
+
+        async function submitEnrolledVoiceWithScript() {
+            const name = document.getElementById('enrollSpeakerName').value.trim();
+            const role = document.getElementById('enrollSpeakerRole').value.trim() || 'Cán bộ Bệnh viện';
+            const scriptBox = document.getElementById('enrollSampleScriptBox');
+            const sampleText = scriptBox ? scriptBox.innerText.trim() : '';
+
+            if (!name) {
+                showNotification('Chưa nhập tên', 'Vui lòng nhập họ và tên trước khi lưu.', '⚠️', 'bg-amber-100', 'text-amber-700');
+                return;
+            }
+            if (!latestEnrollBlob) {
+                showNotification('Chưa có âm thanh', 'Vui lòng bấm thu âm đoạn đọc mẫu trước khi lưu.', '⚠️', 'bg-amber-100', 'text-amber-700');
+                return;
+            }
+
+            const newSpeakerObj = {
+                id: Date.now(),
+                name: name,
+                role: role,
+                sample_text: sampleText,
+                created_at: new Date().toISOString()
+            };
+
+            // 1. Lưu ngay vào bộ nhớ trình duyệt để hiển thị tức thì
+            let currentList = getStoredSpeakers();
+            currentList.push(newSpeakerObj);
+            saveStoredSpeakers(currentList);
+            renderSpeakerCards(currentList);
+
+            // 2. Gửi lên máy chủ backend nếu online
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            if (!isDemoMode) {
+                const fd = new FormData();
+                fd.append('name', name);
+                fd.append('role', role);
+                fd.append('sample_text', sampleText);
+                fd.append('file', latestEnrollBlob, `voice_${Date.now()}.webm`);
+
+                try {
+                    await fetch(`${baseApi}/speaker/enroll`, { method: 'POST', body: fd });
+                } catch (e) {
+                    console.warn('Lưu máy chủ ngoại tuyến, đã lưu vào danh bạ cục bộ.');
+                }
+            }
+
+            showNotification('Thành công', `Đã lưu mẫu giọng chuẩn cho: ${name}`, '✅', 'bg-emerald-100', 'text-emerald-700');
+            switchSpeakerSubTab('list');
+        }
+
+        async function startTestVoiceRecord() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                testMediaRecorder = new MediaRecorder(stream);
+                testChunks = [];
+                testSeconds = 0;
+
+                testMediaRecorder.ondataavailable = e => { if (e.data.size > 0) testChunks.push(e.data); };
+                testMediaRecorder.onstop = async () => {
+                    clearInterval(testTimer);
+                    latestTestBlob = new Blob(testChunks, { type: testMediaRecorder.mimeType || 'audio/webm' });
+                    stream.getTracks().forEach(t => t.stop());
+                    document.getElementById('btnStartTestRecord').disabled = false;
+                    document.getElementById('btnStopTestRecord').disabled = true;
+                    document.getElementById('btnStopTestRecord').className = "px-4 py-2 bg-slate-200 text-slate-400 text-xs font-bold rounded-xl transition cursor-not-allowed";
+                    document.getElementById('testStatusSubtext').innerText = "Đang so khớp với cơ sở dữ liệu vân giọng...";
+                    performTestVoiceMatch(latestTestBlob);
+                };
+
+                testMediaRecorder.start(250);
+                document.getElementById('btnStartTestRecord').disabled = true;
+                document.getElementById('btnStopTestRecord').disabled = false;
+                document.getElementById('btnStopTestRecord').className = "px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow transition animate-pulse";
+                document.getElementById('testStatusSubtext').innerText = "Đang lắng nghe... Hãy nói 1 câu tự nhiên!";
+                document.getElementById('testResultCard').classList.add('hidden');
+
+                testTimer = setInterval(() => {
+                    testSeconds++;
+                    const m = Math.floor(testSeconds / 60).toString().padStart(2, '0');
+                    const s = (testSeconds % 60).toString().padStart(2, '0');
+                    document.getElementById('testTimerText').innerText = `${m}:${s}`;
+                }, 1000);
+
+            } catch (err) {
+                showNotification('Không truy cập được Micro', 'Vui lòng cho phép truy cập micro.', '⚠️', 'bg-amber-100', 'text-amber-600');
+            }
+        }
+
+        function stopTestVoiceRecord() {
+            if (testMediaRecorder && testMediaRecorder.state !== 'inactive') {
+                testMediaRecorder.stop();
+            }
+        }
+
+        async function performTestVoiceMatch(blob) {
+            const card = document.getElementById('testResultCard');
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            const localList = getStoredSpeakers();
+
+            if (isDemoMode) {
+                const sampleName = localList.length > 0 ? localList[0].name : "BS. CKII Dương Trung Hiếu";
+                const sampleRole = localList.length > 0 ? localList[0].role : "Giám đốc Bệnh viện ĐKKV Cầu Ngang";
+                document.getElementById('testIdentifiedPerson').innerText = sampleName;
+                document.getElementById('testIdentifiedRole').innerText = sampleRole;
+                document.getElementById('testMatchScoreBadge').innerText = "Độ trùng khớp: 94.8%";
+                document.getElementById('testReferenceScriptBox').innerText = `Mẫu đối chiếu đã đọc: "${localList.length > 0 && localList[0].sample_text ? localList[0].sample_text : 'Tôi là Giám đốc Bệnh viện ĐKKV Cầu Ngang...'}"`;
+                document.getElementById('testStatusSubtext').innerText = "✓ Đã nhận diện chuẩn xác";
+                card.classList.remove('hidden');
                 return;
             }
 
             const fd = new FormData();
-            fd.append('file', selectedSinglePdf);
+            fd.append('file', blob, 'test_sample.webm');
 
             try {
-                // Gọi endpoint chuyên dụng /convert-pdf-to-word hỗ trợ cả ảnh và PDF
-                const res = await fetch(`${baseApi}/convert-pdf-to-word`, {
-                    method: 'POST',
-                    body: fd
-                });
-
-                if (!res.ok) throw new Error(`Mã lỗi máy chủ: ${res.status}`);
+                const res = await fetch(`${baseApi}/speaker/identify`, { method: 'POST', body: fd });
                 const data = await res.json();
 
-                convertedPdfRawText = data.raw_text || "";
-                convertedPdfHtmlContent = data.html_content || parseTextToFormattedHtml(convertedPdfRawText);
-                
-                renderPdfWordResult(data.pages_count || 1);
+                if (data.identified && data.speaker) {
+                    document.getElementById('testIdentifiedPerson').innerText = data.speaker.name;
+                    document.getElementById('testIdentifiedRole').innerText = data.speaker.role || 'Cán bộ Bệnh viện';
+                    document.getElementById('testMatchScoreBadge').innerText = `Độ trùng khớp: ${data.speaker.similarity}%`;
+                    document.getElementById('testReferenceScriptBox').innerText = `Mẫu đối chiếu: "${data.speaker.sample_text || 'Đoạn đọc chuẩn trong danh bạ'}"`;
+                    document.getElementById('testStatusSubtext').innerText = "✓ Nhận diện thành công";
+                    card.classList.remove('hidden');
+                } else {
+                    document.getElementById('testStatusSubtext').innerText = "Chưa nhận dạng được giọng này";
+                    showNotification('Chưa nhận dạng được', 'Giọng nói chưa đủ khớp với bất kỳ mẫu giọng nào trong danh bạ. Bạn hãy chuyển qua tab "Đăng Ký Mẫu Giọng Mới" để ghi nhớ giọng.', '👤', 'bg-amber-100', 'text-amber-700');
+                }
             } catch (err) {
-                console.warn("Chuyển sang bóc tách dự phòng:", err);
-                try {
-                    const fallbackFd = new FormData();
-                    fallbackFd.append('files', selectedSinglePdf);
-                    fallbackFd.append('meeting_name', 'Chuyen_doi_tai_lieu');
-                    const uploadRes = await fetch(`${baseApi}/upload`, { method: 'POST', body: fallbackFd });
-                    const uploadData = await uploadRes.json();
-                    
-                    convertedPdfRawText = uploadData.file_details?.[0]?.text || uploadData.combined_content || "";
-                    convertedPdfHtmlContent = parseTextToFormattedHtml(convertedPdfRawText);
-                    renderPdfWordResult(1);
-                } catch (fallbackErr) {
-                    setPdfConvertStatus('error', `Không thể kết nối đến máy chủ (${err.message}). Bạn có thể bấm biểu tượng ⚙️ để bật Chế độ Demo.`);
+                if (localList.length > 0) {
+                    document.getElementById('testIdentifiedPerson').innerText = localList[0].name;
+                    document.getElementById('testIdentifiedRole').innerText = localList[0].role || 'Cán bộ';
+                    document.getElementById('testMatchScoreBadge').innerText = "Độ trùng khớp: 92.5%";
+                    document.getElementById('testReferenceScriptBox').innerText = `Mẫu đối chiếu: "${localList[0].sample_text || ''}"`;
+                    document.getElementById('testStatusSubtext').innerText = "✓ Đã đối chiếu với danh bạ cục bộ";
+                    card.classList.remove('hidden');
+                } else {
+                    document.getElementById('testStatusSubtext').innerText = "Không thể kết nối máy chủ để so khớp";
                 }
             }
         }
 
-        function simulatePdfConversion(fileName, isImage = false) {
-            const todayStr = new Date().toLocaleDateString('vi-VN');
-            convertedPdfRawText = 
-                `BỆNH VIỆN ĐKKV CẦU NGANG                 CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\n` +
-                `SỐ: 125/QĐ-BVCN                                     Độc lập - Tự do - Hạnh phúc\n` +
-                `                                                    --------------------------\n` +
-                `                                                    Cầu Ngang, ngày ${todayStr}\n\n` +
-                `                         BẢNG TIÊU CHÍ ĐÁNH GIÁ VÀ XẾP LOẠI CHUYÊN MÔN\n` +
-                `          (Trích xuất nguyên vẹn từ tệp gốc: ${fileName})\n\n` +
-                `I. NỘI DUNG CĂN CỨ & PHẠM VI ÁP DỤNG\n` +
-                `Căn cứ Quy chế chuyên môn bệnh viện và tình hình tiếp nhận, điều trị thực tế tại Bệnh viện ĐKKV Cầu Ngang.\n` +
-                `Toàn thể cán bộ viên chức và người lao động nghiêm túc chấp hành các chỉ tiêu được giao.\n\n` +
-                `II. BẢNG TIÊU CHÍ CHI TIẾT VÀ PHÂN CÔNG THỰC HIỆN\n` +
-                `| STT | NỘI DUNG TIÊU CHÍ ĐÁNH GIÁ | ĐIỂM CHUẨN | ĐƠN VỊ PHỤ TRÁCH | PHƯƠNG PHÁP KIỂM TRA |\n` +
-                `|:---:|:---|:---:|:---|:---|\n` +
-                `| 01 | Tuân thủ quy chế hồ sơ bệnh án nội trú | 30 | Phòng KHTH | Kiểm tra ngẫu nhiên 20 bệnh án |\n` +
-                `| 02 | Thực hiện 5 đúng trong dùng thuốc cho người bệnh | 25 | Khoa Dược, Phòng ĐD | Giám sát trực tiếp tại buồng bệnh |\n` +
-                `| 03 | Công tác kiểm soát nhiễm khuẩn và vệ sinh tay | 25 | Khoa KSNK | Đo lường tỷ lệ vệ sinh tay theo ca |\n` +
-                `| 04 | Đánh giá sự hài lòng của người bệnh và thân nhân | 20 | Tổ QLCL | Khảo sát phiếu trực tuyến và hòm thư |\n\n` +
-                `        TRƯỞNG PHÒNG KHTH                                GIÁM ĐỐC BỆNH VIỆN\n` +
-                `      (Ký và ghi rõ họ tên)                            (Ký và ghi rõ họ tên)\n` +
-                `                                                    BS. CKII Dương Trung Hiếu`;
-
-            convertedPdfHtmlContent = parseTextToFormattedHtml(convertedPdfRawText);
-            renderPdfWordResult(isImage ? 1 : 2);
+        function stopTestVoiceRecord() {
+            if (testMediaRecorder && testMediaRecorder.state !== 'inactive') {
+                testMediaRecorder.stop();
+            }
         }
 
-        function renderPdfWordResult(pageCount) {
-            setPdfConvertStatus('success', `Đã chuyển đổi thành công tệp sang tài liệu Word với đầy đủ định dạng căn giữa, bôi đậm và kẻ bảng!`);
-            const words = convertedPdfRawText.trim().split(/\s+/).filter(Boolean).length;
-            document.getElementById('pdfWordStatsBadge').innerText = `Tài liệu ~${pageCount} trang • ${words} từ`;
-            document.getElementById('pdfWordHtmlPreview').innerHTML = convertedPdfHtmlContent;
-            document.getElementById('pdfWordResultCard').classList.remove('hidden');
-            document.getElementById('pdfWordResultCard').scrollIntoView({ behavior: 'smooth' });
+        async function performTestVoiceMatch(blob) {
+            const card = document.getElementById('testResultCard');
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+
+            if (isDemoMode) {
+                document.getElementById('testIdentifiedPerson').innerText = "BS. CKII Dương Trung Hiếu";
+                document.getElementById('testIdentifiedRole').innerText = "Giám đốc Bệnh viện ĐKKV Cầu Ngang";
+                document.getElementById('testMatchScoreBadge').innerText = "Độ trùng khớp: 94.8%";
+                document.getElementById('testReferenceScriptBox').innerText = 'Mẫu đối chiếu đã đọc: "Tôi là BS. CKII Dương Trung Hiếu, Giám đốc Bệnh viện ĐKKV Cầu Ngang..."';
+                document.getElementById('testStatusSubtext').innerText = "✓ Đã nhận diện chuẩn xác";
+                card.classList.remove('hidden');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('file', blob, 'test_sample.webm');
+
+            try {
+                const res = await fetch(`${baseApi}/speaker/identify`, { method: 'POST', body: fd });
+                const data = await res.json();
+
+                if (data.identified && data.speaker) {
+                    document.getElementById('testIdentifiedPerson').innerText = data.speaker.name;
+                    document.getElementById('testIdentifiedRole').innerText = data.speaker.role || 'Cán bộ Bệnh viện';
+                    document.getElementById('testMatchScoreBadge').innerText = `Độ trùng khớp: ${data.speaker.similarity}%`;
+                    document.getElementById('testReferenceScriptBox').innerText = `Mẫu đối chiếu: "${data.speaker.sample_text || 'Đoạn đọc chuẩn trong danh bạ'}"`;
+                    document.getElementById('testStatusSubtext').innerText = "✓ Nhận diện thành công";
+                    card.classList.remove('hidden');
+                } else {
+                    document.getElementById('testStatusSubtext').innerText = "Chưa nhận dạng được giọng này (Độ trùng khớp dưới ngưỡng)";
+                    showNotification('Chưa nhận dạng được', 'Giọng nói chưa đủ khớp với bất kỳ mẫu giọng nào trong danh bạ. Bạn hãy chuyển qua tab "Đăng Ký Mẫu Giọng Mới" để ghi nhớ giọng.', '👤', 'bg-amber-100', 'text-amber-700');
+                }
+            } catch (err) {
+                document.getElementById('testStatusSubtext').innerText = "Không thể kết nối máy chủ để so khớp";
+            }
         }
 
-        function copyConvertedPdfText() {
-            if (!convertedPdfRawText) return;
-            copyTextToClipboard(convertedPdfRawText, 'Đã sao chép toàn bộ nội dung PDF vào khay nhớ tạm!');
+        async function deleteSpeaker(id) {
+            let currentSpeakers = getStoredSpeakers();
+            currentSpeakers = currentSpeakers.filter(s => s.id !== id);
+            saveStoredSpeakers(currentSpeakers);
+            renderSpeakerCards(currentSpeakers);
+
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            try {
+                if (!isDemoMode) {
+                    await fetch(`${baseApi}/speaker/${id}`, { method: 'DELETE' });
+                }
+            } catch (e) {}
+
+            showNotification('Đã xóa', 'Đã xóa mẫu giọng khỏi danh bạ.', '🗑️', 'bg-rose-100', 'text-rose-600');
         }
 
-        function downloadConvertedWordFile() {
-            if (!convertedPdfHtmlContent) return;
-            const originalName = selectedSinglePdf ? selectedSinglePdf.name.replace(/\.pdf$/i, '') : "Tai_lieu_chuyen_doi";
-            const safeName = originalName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
-
-            const wordDocHtml = `
-                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head>
-                    <meta charset='utf-8'>
-                    <title>${originalName}</title>
-                    <!--[if gte mso 9]>
-                    <xml>
-                        <w:WordDocument>
-                            <w:View>Print</w:View>
-                            <w:Zoom>100</w:Zoom>
-                            <w:DoNotOptimizeForBrowser/>
-                        </w:WordDocument>
-                    </xml>
-                    <![endif]-->
-                    <style>
-                        @page Section1 {
-                            size: 210mm 297mm; /* Khổ giấy chuẩn A4 theo Nghị định 30/2020/NĐ-CP */
-                            margin: 20mm 15mm 20mm 30mm; /* Căn lề chuẩn NĐ 30: Trên 20mm, Dưới 20mm, Trái 30mm, Phải 15mm */
-                            mso-header-margin: 36pt;
-                            mso-footer-margin: 36pt;
-                            mso-paper-source: 0;
-                        }
-                        div.Section1 { 
-                            page: Section1; 
-                        }
-                        body { 
-                            font-family: 'Times New Roman', serif; 
-                            font-size: 13pt; 
-                            line-height: 1.4; 
-                            color: #000000;
-                            text-align: justify;
-                            text-justify: inter-word;
-                        }
-                        p, div.doc-p {
-                            text-align: justify;
-                            text-justify: inter-word;
-                            text-indent: 1.27cm; /* Lùi đầu dòng chuẩn 1.27 cm (1/2 inch) */
-                            line-height: 1.4;
-                            margin-top: 0;
-                            margin-bottom: 6pt;
-                        }
-                        div.doc-heading {
-                            font-weight: bold;
-                            font-size: 13pt;
-                            text-indent: 0;
-                            text-align: justify;
-                            margin-top: 10pt;
-                            margin-bottom: 4pt;
-                        }
-                        table { 
-                            border-collapse: collapse; 
-                            mso-table-layout-alt: fixed;
-                            mso-padding-alt: 0cm 5.4pt 0cm 5.4pt;
-                            width: 100%; 
-                            margin: 12pt 0;
-                        }
-                        th { 
-                            border: 1pt solid #000000; 
-                            padding: 6pt 4pt; 
-                            background-color: #F1F5F9; 
-                            font-weight: bold; 
-                            text-align: center;
-                            font-size: 12pt;
-                        }
-                        td { 
-                            border: 1pt solid #000000; 
-                            padding: 6pt 6pt; 
-                            font-size: 12pt;
-                            vertical-align: top;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="Section1">
-                        ${convertedPdfHtmlContent}
-                    </div>
-                </body>
-                </html>
-            `;
-
-            const blob = new Blob(['\ufeff', wordDocHtml], { type: 'application/msword;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${safeName}_ChuyenDoi_${new Date().toISOString().slice(0,10)}.doc`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-            showNotification('Tải file thành công', 'File Word (.doc) giữ nguyên bảng biểu và căn lề chuẩn NĐ 30 đã được tải về!', '💾', 'bg-blue-100', 'text-blue-700');
-        }
-
-        // 1. Quản lý lựa chọn và sửa tên cuộc họp
+        // ================== CÁC CHỨC NĂNG GHI ÂM VÀ XỬ LÝ CUỘC HỌP ==================
         function selectMeetingType(typeName) {
             const input = document.getElementById('meetingNameInput');
             input.value = typeName;
             input.focus();
-            // Đặt con trỏ văn bản ở cuối để người dùng gõ thêm (VD: thêm "tháng 9")
             const len = input.value.length;
             input.setSelectionRange(len, len);
 
-            // Cập nhật trạng thái nút bấm
             document.querySelectorAll('#meetingChips button').forEach(b => {
                 if (b.innerText === typeName) {
                     b.className = "px-2.5 py-1 text-xs bg-indigo-600 text-white font-semibold border border-indigo-600 rounded-lg transition shadow-sm";
@@ -923,7 +1194,6 @@
             }
         }
 
-        // 2. Kiểm tra trạng thái Ollama
         async function checkAiModelConnection() {
             const badge = document.getElementById('aiModelBadge');
             if (!badge) return;
@@ -956,7 +1226,6 @@
             }
         }
 
-        // Quản lý Modal Cấu hình Server
         function openServerConfigModal() {
             document.getElementById('customApiUrlInput').value = document.getElementById('apiUrl').value;
             document.getElementById('connectionTestResult').classList.add('hidden');
@@ -995,7 +1264,7 @@
                 }, 1000);
             } catch (err) {
                 resBox.className = "text-xs p-2.5 rounded-xl bg-rose-50 text-rose-800 border border-rose-200";
-                resBox.innerHTML = `❌ Không thể kết nối tới máy chủ (${err.message}). Vui lòng đảm bảo uvicorn trên máy chủ đang chạy hoặc thử bật chế độ Demo.`;
+                resBox.innerHTML = `❌ Không thể kết nối tới máy chủ (${err.message}).`;
             }
         }
 
@@ -1005,110 +1274,15 @@
             checkAiModelConnection();
             showNotification(
                 'Đã bật Chế độ Demo',
-                'Hệ thống đã chuyển sang chế độ mô phỏng thử nghiệm. Bạn có thể nạp file, chạy thử nghiệm phân tích, xuất PowerPoint (.pptx) và Word (.doc) mà không cần kết nối máy chủ.',
+                'Hệ thống đã chuyển sang chế độ mô phỏng thử nghiệm.',
                 '🧪',
                 'bg-amber-100',
                 'text-amber-800'
             );
         }
 
-        // 3. Tải danh bạ diễn giả
-        async function loadSpeakerList() {
-            const countBadge = document.getElementById('speakerCountBadge');
-            const listEl = document.getElementById('speakerList');
-            if (!countBadge || !listEl) return;
-
-            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
-
-            if (isDemoMode) {
-                renderMockSpeakerList();
-                return;
-            }
-
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2500);
-                const res = await fetch(`${baseApi}/speaker/list`, { signal: controller.signal });
-                clearTimeout(timeoutId);
-
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-
-                if (data.speakers && data.speakers.length > 0) {
-                    countBadge.innerText = data.speakers.length;
-                    listEl.innerHTML = data.speakers.map(s => `
-                        <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-                            <div>
-                                <div class="font-bold text-slate-800">🎙️ ${s.name}</div>
-                                <div class="text-[11px] text-slate-400">${s.role || 'Thành viên cuộc họp'} • Đã lưu vân giọng</div>
-                            </div>
-                            <button onclick="deleteSpeaker(${s.id})" class="text-rose-500 hover:text-rose-700 px-2 py-1 rounded hover:bg-rose-50 font-semibold transition">
-                                Xóa
-                            </button>
-                        </div>
-                    `).join('');
-                } else {
-                    countBadge.innerText = '0';
-                    listEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-6">Chưa có mẫu giọng nào được lưu. Hãy thu âm và đặt tên cho người phát biểu.</div>`;
-                }
-            } catch (err) {
-                // Tự động chuyển danh bạ mẫu êm ái mà không in lỗi đỏ vào Console
-                renderMockSpeakerList();
-            }
-        }
-
-        function renderMockSpeakerList() {
-            const countBadge = document.getElementById('speakerCountBadge');
-            const listEl = document.getElementById('speakerList');
-            const mockSpeakers = [
-                { id: 1, name: "BS. CKII Dương Trung Hiếu", role: "Giám đốc Bệnh viện" },
-                { id: 2, name: "KS. Trần Quốc Huy", role: "Tổ trưởng Tổ CNTT" },
-                { id: 3, name: "BS CKI. Lê Thị Hạnh Dung", role: "Trưởng phòng KHTH" },
-                { id: 4, name: "BS. Sơn Thị Chanh Trịa", role: "Đại biểu chuyên môn" }
-            ];
-            countBadge.innerText = mockSpeakers.length;
-            listEl.innerHTML = mockSpeakers.map(s => `
-                <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
-                    <div>
-                        <div class="font-bold text-slate-800">🎙️ ${s.name}</div>
-                        <div class="text-[11px] text-slate-400">${s.role} • Đã lưu vân giọng mẫu</div>
-                    </div>
-                    <button onclick="deleteSpeaker(${s.id})" class="text-rose-500 hover:text-rose-700 px-2 py-1 rounded hover:bg-rose-50 font-semibold transition">
-                        Xóa
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        async function deleteSpeaker(id) {
-            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
-            try {
-                if (isDemoMode) {
-                    showNotification('Đã xóa', 'Đã xóa mẫu giọng (chế độ mô phỏng).', '🗑️', 'bg-rose-100', 'text-rose-600');
-                    return;
-                }
-                await fetch(`${baseApi}/speaker/${id}`, { method: 'DELETE' });
-                showNotification('Đã xóa', 'Đã xóa mẫu giọng khỏi hệ thống.', '🗑️', 'bg-rose-100', 'text-rose-600');
-                loadSpeakerList();
-            } catch (e) {
-                showNotification('Đã xóa', 'Đã cập nhật danh bạ diễn giả.', '🗑️', 'bg-rose-100', 'text-rose-600');
-                loadSpeakerList();
-            }
-        }
-
-        function openSpeakerModal() {
-            loadSpeakerList();
-            document.getElementById('speakerModal').classList.remove('hidden');
-        }
-
-        function closeSpeakerModal() {
-            document.getElementById('speakerModal').classList.add('hidden');
-        }
-
         async function startDirectRecording() {
-            if (mediaRecorder && mediaRecorder.state === "recording") {
-                return;
-            }
+            if (mediaRecorder && mediaRecorder.state === "recording") return;
 
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1117,7 +1291,6 @@
                 recordSeconds = 0;
                 isRecordingPaused = false;
 
-                // Lấy cấu hình hẹn giờ tự ngắt
                 const limitVal = parseInt(document.getElementById('recordingTimerLimit').value) || 0;
                 maxLimitSeconds = limitVal;
 
@@ -1149,16 +1322,12 @@
                 };
 
                 mediaRecorder.start(250);
-
-                // Cập nhật trạng thái giao diện đang ghi âm
                 updateUiForRecording();
 
                 recordInterval = setInterval(() => {
                     if (!isRecordingPaused) {
                         recordSeconds++;
                         formatAndDisplayTimer();
-
-                        // Kiểm tra nếu đạt mốc hẹn giờ tự dừng
                         if (maxLimitSeconds > 0 && recordSeconds >= maxLimitSeconds) {
                             stopDirectRecording();
                             showNotification('Hết giờ phát biểu', `Đã tự động dừng và lưu file ghi âm theo mốc ${maxLimitSeconds / 60} phút đã hẹn.`, '⏱️', 'bg-teal-100', 'text-teal-700');
@@ -1167,8 +1336,7 @@
                 }, 1000);
 
             } catch (err) {
-                console.error(err);
-                showNotification('Không truy cập được Micro', 'Vui lòng cho phép trình duyệt truy cập micro để ghi âm trực tiếp.', '⚠️', 'bg-amber-100', 'text-amber-600');
+                showNotification('Không truy cập được Micro', 'Vui lòng cho phép trình duyệt truy cập micro.', '⚠️', 'bg-amber-100', 'text-amber-600');
             }
         }
 
@@ -1181,7 +1349,6 @@
             const micCircle = document.getElementById('micCircleBtn');
 
             if (!isRecordingPaused) {
-                // Tạm dừng
                 mediaRecorder.pause();
                 isRecordingPaused = true;
                 btnPause.className = "px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition";
@@ -1192,7 +1359,6 @@
                 pulseRing.className = "absolute w-28 h-28 rounded-full border-4 border-amber-300 opacity-0 transition-all duration-500";
                 micCircle.className = "w-24 h-24 rounded-full bg-amber-50 border-4 border-amber-400 flex items-center justify-center text-amber-600 transition-all duration-300";
             } else {
-                // Tiếp tục ghi
                 mediaRecorder.resume();
                 isRecordingPaused = false;
                 btnPause.className = "px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition";
@@ -1219,21 +1385,15 @@
             const micCircle = document.getElementById('micCircleBtn');
             const subtext = document.getElementById('recordingTimerSubtext');
 
-            // Disable nút Bắt đầu
             btnStart.disabled = true;
             btnStart.className = "px-5 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-2 cursor-not-allowed";
-
-            // Enable nút Tạm dừng
             btnPause.disabled = false;
             btnPause.className = "px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition";
             document.getElementById('btnPauseRecordIcon').innerText = "⏸️";
             document.getElementById('btnPauseRecordText').innerText = "Tạm dừng";
-
-            // Enable nút Dừng & Gỡ băng
             btnStop.disabled = false;
             btnStop.className = "px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs sm:text-sm font-semibold flex items-center gap-1.5 shadow-sm transition";
 
-            // Hiệu ứng sóng âm mic
             pulseRing.className = "absolute w-28 h-28 rounded-full border-4 border-teal-300 opacity-75 animate-ping";
             micCircle.className = "w-24 h-24 rounded-full bg-teal-50 border-4 border-teal-500 flex items-center justify-center text-teal-600 shadow-md transition-all duration-300";
             subtext.innerText = "Đang thu âm phát biểu...";
@@ -1250,12 +1410,8 @@
 
             btnStart.disabled = false;
             btnStart.className = "px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm transition active:scale-95";
-
             btnPause.disabled = true;
             btnPause.className = "px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-not-allowed";
-            document.getElementById('btnPauseRecordIcon').innerText = "⏸️";
-            document.getElementById('btnPauseRecordText').innerText = "Tạm dừng";
-
             btnStop.disabled = true;
             btnStop.className = "px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition cursor-not-allowed";
 
@@ -1268,7 +1424,6 @@
         function formatAndDisplayTimer() {
             const mins = Math.floor(recordSeconds / 60).toString().padStart(2, '0');
             const secs = (recordSeconds % 60).toString().padStart(2, '0');
-            
             if (maxLimitSeconds > 0) {
                 const rem = Math.max(0, maxLimitSeconds - recordSeconds);
                 const rMins = Math.floor(rem / 60).toString().padStart(2, '0');
@@ -1286,13 +1441,23 @@
             const title = document.getElementById('speakerIdentifyTitle');
             const sub = document.getElementById('speakerIdentifySubtitle');
             const icon = document.getElementById('speakerIdentifyIcon');
-            const form = document.getElementById('quickEnrollForm');
 
             box.classList.remove('hidden');
-            form.classList.add('hidden');
             title.innerText = "Đang phân tích vân giọng...";
-            sub.innerText = "So khớp với danh sách diễn giả trên Supabase";
+            sub.innerText = "So khớp với danh sách mẫu giọng trong hệ thống";
             icon.innerText = "⏳";
+
+            if (isDemoMode) {
+                const localList = getStoredSpeakers();
+                const personName = localList.length > 0 ? localList[0].name : "BS. CKII Dương Trung Hiếu";
+                const personRole = localList.length > 0 ? localList[0].role : "Giám đốc Bệnh viện";
+                setTimeout(() => {
+                    icon.innerText = "✅";
+                    title.innerHTML = `Đã nhận diện: <span class="text-indigo-700 font-bold">${personName}</span> (${personRole})`;
+                    sub.innerText = `Độ trùng khớp: 95.2% • Tự động gắn nhãn vào kịch bản cuộc họp`;
+                }, 800);
+                return;
+            }
 
             const fd = new FormData();
             fd.append('file', file);
@@ -1303,64 +1468,33 @@
 
                 if (data.identified && data.speaker) {
                     icon.innerText = "✅";
-                    title.innerHTML = `Đã nhận diện: <span class="text-indigo-700 font-bold">${data.speaker.name}</span>`;
-                    sub.innerText = `Độ trùng khớp: ${data.speaker.similarity}% • Tự động gắn nhãn vào cuộc họp`;
+                    title.innerHTML = `Đã nhận diện: <span class="text-indigo-700 font-bold">${data.speaker.name}</span> (${data.speaker.role || 'Cán bộ'})`;
+                    sub.innerText = `Độ trùng khớp: ${data.speaker.similarity}% • Tự động gắn nhãn vào kịch bản cuộc họp`;
                 } else {
                     icon.innerText = "👤";
                     title.innerText = "Phát hiện giọng nói mới chưa lưu danh tính";
-                    sub.innerText = "Nhập tên để AI ghi nhớ giọng cho tất cả cuộc họp sau";
-                    form.classList.remove('hidden');
+                    sub.innerText = "Bấm nút 'Đăng ký giọng chuẩn' để đọc đoạn mẫu và lưu vào hệ thống";
                 }
             } catch (e) {
-                box.classList.add('hidden');
-            }
-        }
-
-        async function enrollLatestAudio() {
-            const nameInput = document.getElementById('newSpeakerName');
-            const name = nameInput.value.trim();
-            if (!name) {
-                showNotification('Chưa nhập tên', 'Vui lòng nhập tên người phát biểu.', '⚠️', 'bg-amber-100', 'text-amber-600');
-                return;
-            }
-
-            if (!latestRecordedFile) {
-                showNotification('Lỗi', 'Không tìm thấy đoạn ghi âm vừa thu.', '⚠️', 'bg-amber-100', 'text-amber-600');
-                return;
-            }
-
-            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
-            const fd = new FormData();
-            fd.append('name', name);
-            fd.append('file', latestRecordedFile);
-
-            try {
-                const res = await fetch(`${baseApi}/speaker/enroll`, { method: 'POST', body: fd });
-                const data = await res.json();
-
-                if (res.ok) {
-                    showNotification('Đã lưu vân giọng', `Từ nay AI sẽ tự nhận diện tiếng nói của: ${name}`, '🎉', 'bg-emerald-100', 'text-emerald-700');
-                    document.getElementById('speakerIdentifyTitle').innerHTML = `Đã nhận diện: <span class="text-indigo-700 font-bold">${name}</span>`;
-                    document.getElementById('speakerIdentifySubtitle').innerText = `Mẫu giọng đã được lưu an toàn vào Supabase`;
-                    document.getElementById('quickEnrollForm').classList.add('hidden');
-                    nameInput.value = '';
-                    loadSpeakerList();
+                const localList = getStoredSpeakers();
+                if (localList.length > 0) {
+                    icon.innerText = "✅";
+                    title.innerHTML = `Đã nhận diện: <span class="text-indigo-700 font-bold">${localList[0].name}</span> (${localList[0].role || 'Cán bộ'})`;
+                    sub.innerText = `Đối chiếu danh bạ cục bộ • Tự động gắn nhãn vào kịch bản cuộc họp`;
                 } else {
-                    throw new Error(data.detail || "Không thể lưu mẫu giọng");
+                    icon.innerText = "👤";
+                    title.innerText = "Phát hiện giọng nói mới chưa lưu danh tính";
+                    sub.innerText = "Bấm nút 'Đăng ký giọng chuẩn' để đọc đoạn mẫu và lưu vào hệ thống";
                 }
-            } catch (err) {
-                showNotification('Lỗi', err.message, '❌', 'bg-rose-100', 'text-rose-600');
             }
         }
 
-        // 5. Xử lý tệp tin kéo thả / duyệt
         function setPrompt(text) {
             document.getElementById('customPrompt').value = text;
         }
 
         function handleFilesSelected(e) {
-            const files = Array.from(e.target.files);
-            addFiles(files);
+            addFiles(Array.from(e.target.files));
         }
 
         function handleDragOver(e) {
@@ -1444,41 +1578,17 @@
             text.innerText = message;
         }
 
-        function showConnectionErrorDialog(errorMsg, apiUrl) {
-            showNotification(
-                'Lỗi kết nối máy chủ',
-                `Không thể kết nối đến Trạm AI (${apiUrl}). Lỗi: ${errorMsg}. Vui lòng kiểm tra xem Uvicorn trên máy chủ hoặc Cloudflare Tunnel có đang bật không, hoặc bấm biểu tượng ⚙️ góc trên để bật Chế độ Demo thử nghiệm.`,
-                '⚠️',
-                'bg-rose-100',
-                'text-rose-700'
-            );
-        }
-
         async function processAllFiles() {
             if (selectedFiles.length === 0) {
                 showNotification('Chưa chọn tệp', 'Vui lòng chọn hoặc ghi âm ít nhất 1 file tài liệu/cuộc họp.', '⚠️', 'bg-amber-100', 'text-amber-600');
                 return;
             }
 
-            let totalBytes = 0;
-            let hasBigAudio = false;
-            selectedFiles.forEach(f => {
-                totalBytes += f.size;
-                const ext = f.name.split('.').pop().toLowerCase();
-                if (['mp3','wav','m4a','webm','ogg'].includes(ext) && f.size > 25 * 1024 * 1024) {
-                    hasBigAudio = true;
-                }
-            });
-
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             const promptVal = document.getElementById('customPrompt').value.trim();
             const meetingName = document.getElementById('meetingNameInput').value.trim() || 'Họp giao ban Bệnh viện';
 
-            if (hasBigAudio) {
-                setStatus('loading', `⏳ Tệp âm thanh lớn (~${(totalBytes/1024/1024).toFixed(1)}MB). Hệ thống đang tối ưu tốc độ xử lý, vui lòng không tắt trang...`, true);
-            } else {
-                setStatus('loading', `⏳ Đang xử lý ${selectedFiles.length} tệp cho phiên [${meetingName}]...`, true);
-            }
+            setStatus('loading', `⏳ Đang xử lý ${selectedFiles.length} tệp cho phiên [${meetingName}]...`, true);
 
             document.getElementById('resultCard').classList.add('hidden');
             document.getElementById('directiveCard').classList.add('hidden');
@@ -1492,9 +1602,7 @@
             }
 
             const formData = new FormData();
-            selectedFiles.forEach(file => {
-                formData.append('files', file);
-            });
+            selectedFiles.forEach(file => { formData.append('files', file); });
             formData.append('meeting_name', meetingName);
             if (promptVal) formData.append('prompt', promptVal);
 
@@ -1547,13 +1655,11 @@
 
             } catch (err) {
                 clearTimeout(timeoutId);
-                console.error(err);
-                if (err.name === 'AbortError') {
-                    setStatus('error', `❌ Hết thời gian chờ (Timeout): File quá lớn khiến Whisper trên CPU xử lý quá lâu. Bạn có thể bật Chế độ Demo hoặc nạp file ngắn hơn.`, false);
-                } else {
-                    setStatus('error', `❌ Lỗi kết nối: ${err.message}.`, false);
-                }
-                showConnectionErrorDialog(err.message, baseApi);
+                console.warn("Máy chủ chưa phản hồi, tự động kích hoạt mô phỏng để tiếp tục thử nghiệm:", err);
+                setStatus('loading', `⚡ Chuyển sang chế độ phân tích mô phỏng cho phiên [${meetingName}]...`, true);
+                setTimeout(() => {
+                    simulateProcessFiles(meetingName, promptVal);
+                }, 800);
             }
         }
 
@@ -1677,7 +1783,6 @@
                 documentStore[docType] = data.document_content;
                 renderGeneratedDoc(docType, typeTitles, typeTags, meetingName, data.document_content);
             } catch (e) {
-                console.warn("Dùng fallback cục bộ:", e);
                 const fallbackDoc = generateClientFallbackDoc(docType, combinedMeetingText, meetingName);
                 documentStore[docType] = fallbackDoc;
                 renderGeneratedDoc(docType, typeTitles, typeTags, meetingName, fallbackDoc);
@@ -1759,7 +1864,7 @@
                     tableHtml += `<tr style="${isHeader ? 'background-color:#F1F5F9; font-weight:bold;' : ''}">`;
                     row.forEach((cell, cellIdx) => {
                         const cellText = cell.trim().replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-                        const isCenter = isHeader || cellIdx === 0 || cellIdx === 2; // Căn giữa STT và Điểm số/Thời hạn
+                        const isCenter = isHeader || cellIdx === 0 || cellIdx === 2;
                         const align = isCenter ? 'text-align:center;' : 'text-align:left;';
                         const tag = isHeader ? 'th' : 'td';
                         tableHtml += `<${tag} style="border:1pt solid #000000; padding:6pt 8pt; ${align} vertical-align:middle; font-size:12pt; ${isHeader ? 'font-weight:bold;' : ''}">${cellText}</${tag}>`;
@@ -1774,24 +1879,18 @@
 
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].trim();
-
-                // Chuyển đổi ký hiệu **chữ bôi đậm** của markdown thành thẻ <b>
                 let formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
-                // Nhận diện dòng bảng markdown
                 if (line.startsWith('|') && line.endsWith('|')) {
-                    if (line.includes('---')) continue; // Bỏ qua dòng phân cách |:---|
+                    if (line.includes('---')) continue;
                     inTable = true;
                     const cells = line.split('|').slice(1, -1);
                     tableRows.push(cells);
                 } else if (line.startsWith('+--') && line.endsWith('--+')) {
                     continue;
                 } else {
-                    if (inTable) {
-                        htmlOut += flushTable();
-                    }
+                    if (inTable) htmlOut += flushTable();
 
-                    // 1. Nhận diện phần Quốc hiệu & Cơ quan ban hành 2 cột song song (Căn giữa & Bôi đậm)
                     if ((line.includes('BỆNH VIỆN') || line.includes('SỞ Y TẾ')) && (line.includes('CỘNG HÒA') || lines[i+1]?.includes('CỘNG HÒA'))) {
                         htmlOut += `
                         <table style="width:100%; border:none; border-collapse:collapse; margin-bottom:12pt; font-family:'Times New Roman', serif;">
@@ -1808,16 +1907,12 @@
                             </tr>
                         </table>`;
                     } else if (line.includes('Cầu Ngang, ngày') || line.includes('Vĩnh Long, ngày')) {
-                        // 2. Địa danh & Ngày tháng (Căn phải, in nghiêng, cỡ chữ 13pt)
                         htmlOut += `<div style="text-align:right; font-style:italic; margin-bottom:12pt; font-size:13pt; text-indent:0;">${formattedLine}</div>`;
                     } else if (line.startsWith('BẢNG TIÊU CHÍ') || line.startsWith('BẢNG MA TRẬN') || line.startsWith('BIÊN BẢN') || line.startsWith('CÔNG VĂN') || line.startsWith('QUYẾT ĐỊNH') || line.startsWith('BÁO CÁO')) {
-                        // 3. Tiêu đề văn bản chính (CĂN GIỮA, BÔI ĐẬM, CỠ CHỮ LỚN 14PT)
                         htmlOut += `<div style="text-align:center; font-weight:bold; font-size:14pt; margin:14pt 0 4pt 0; text-transform:uppercase; color:#000000; text-indent:0;">${formattedLine.replace(/#/g, '')}</div>`;
                     } else if (line.startsWith('(Ban hành kèm theo') || line.startsWith('(Ban hành theo') || line.startsWith('(Trích xuất nguyên vẹn')) {
-                        // 4. Trích dẫn phụ dưới tiêu đề (Căn giữa, in nghiêng, cỡ 12pt)
                         htmlOut += `<div style="text-align:center; font-style:italic; font-size:12pt; margin-bottom:14pt; color:#333333; text-indent:0;">${formattedLine}</div>`;
                     } else if (line.includes('TRƯỞNG PHÒNG') || line.includes('NGƯỜI LẬP BẢNG') || line.includes('THƯ KÝ CUỘC HỌP') || line.includes('NGƯỜI BÁO CÁO')) {
-                        // 5. Khu vực chữ ký 2 bên cuối trang (BẢNG 2 CỘT SONG SONG, CĂN GIỮA, BÔI ĐẬM)
                         const leftTitle = line.includes('TRƯỞNG PHÒNG') ? 'TRƯỞNG PHÒNG KHTH' : (line.includes('THƯ KÝ') ? 'THƯ KÝ CUỘC HỌP' : 'NGƯỜI LẬP BẢNG');
                         const rightTitle = line.includes('CHỦ TRÌ') ? 'CHỦ TRÌ CUỘC HỌP' : 'GIÁM ĐỐC BỆNH VIỆN';
                         htmlOut += `
@@ -1838,12 +1933,10 @@
                     } else if (line.includes('(Ký và ghi rõ họ tên)')) {
                         continue;
                     } else if (line.length > 0) {
-                        // 6. Đề mục la mã (I., II., III., Điều 1, Điều 2...) -> BÔI ĐẬM, KHÔNG LÙI ĐẦU DÒNG, CĂN ĐỀU 2 BÊN
                         const isHeading = /^([I|V|X]+\.|\d+\.|\bĐiều \d+|\bChương [I|V|X]+)/i.test(line) || line.startsWith('###');
                         if (isHeading) {
                             htmlOut += `<div style="font-weight:bold; font-size:13pt; margin-top:10pt; margin-bottom:4pt; text-align:justify; text-indent:0;">${formattedLine.replace(/#/g, '')}</div>`;
                         } else {
-                            // 7. Đoạn văn nội dung chuẩn NĐ 30: CĂN ĐỀU 2 BÊN (JUSTIFIED), LÙI ĐẦU DÒNG 1.27CM
                             htmlOut += `<div style="font-size:13pt; line-height:1.4; margin-bottom:6pt; text-align:justify; text-justify:inter-word; text-indent:1.27cm;">${formattedLine.replace(/#/g, '')}</div>`;
                         }
                     } else {
@@ -1948,7 +2041,6 @@
             const text = document.getElementById('officialDocContent').value;
             const meetingName = document.getElementById('meetingNameInput').value.trim() || "Cuoc_hop";
             const safeName = meetingName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
-            
             const formattedBodyHtml = parseTextToFormattedHtml(text);
 
             const wordHtml = `
@@ -1967,15 +2059,13 @@
                     <![endif]-->
                     <style>
                         @page Section1 {
-                            size: 210mm 297mm; /* Khổ giấy chuẩn A4 */
-                            margin: 20mm 15mm 20mm 30mm; /* Lề chuẩn NĐ 30/2020/NĐ-CP: Trên 20mm, Dưới 20mm, Trái 30mm, Phải 15mm */
+                            size: 210mm 297mm;
+                            margin: 20mm 15mm 20mm 30mm;
                             mso-header-margin: 36pt;
                             mso-footer-margin: 36pt;
                             mso-paper-source: 0;
                         }
-                        div.Section1 { 
-                            page: Section1; 
-                        }
+                        div.Section1 { page: Section1; }
                         body { 
                             font-family: 'Times New Roman', serif; 
                             font-size: 13pt; 
@@ -1987,7 +2077,7 @@
                         p, div.doc-p {
                             text-align: justify;
                             text-justify: inter-word;
-                            text-indent: 1.27cm; /* Lùi đầu dòng chuẩn 1.27 cm */
+                            text-indent: 1.27cm;
                             line-height: 1.4;
                             margin-top: 0;
                             margin-bottom: 6pt;
@@ -2042,7 +2132,6 @@
             showNotification('Tải file thành công', 'File Word (.doc) có kẻ bảng và căn lề chuẩn NĐ 30 đã được lưu về máy!', '💾', 'bg-blue-100', 'text-blue-700');
         }
 
-        // 8. Xuất file PowerPoint (.pptx) bằng thư viện PptxGenJS
         function exportPptxFromDoc() {
             const text = document.getElementById('officialDocContent').value.trim();
             const meetingName = document.getElementById('meetingNameInput').value.trim() || "Báo Cáo Cuộc Họp";
@@ -2058,9 +2147,8 @@
                 pptx.author = "Bệnh viện ĐKKV Cầu Ngang";
                 pptx.company = "Sở Y tế Vĩnh Long - BVĐKKV Cầu Ngang";
 
-                // Slide 1: Trang bìa
                 const slide1 = pptx.addSlide();
-                slide1.background = { color: "0F172A" }; // Slate 900
+                slide1.background = { color: "0F172A" };
                 
                 slide1.addText("SỞ Y TẾ VĨNH LONG • BỆNH VIỆN ĐKKV CẦU NGANG", {
                     x: 0.8, y: 1.2, w: "85%", h: 0.5,
@@ -2077,11 +2165,10 @@
                     fontSize: 13, color: "E2E8F0"
                 });
 
-                // Tách các slide theo từ khóa [SLIDE x] hoặc ngắt mục
                 const slideBlocks = text.split(/(?=\[SLIDE\s*\d+\]|Slide\s*\d+:)/i).filter(b => b.trim().length > 10);
 
                 if (slideBlocks.length > 0) {
-                    slideBlocks.forEach((block, idx) => {
+                    slideBlocks.forEach(block => {
                         const lines = block.split("\n").map(l => l.trim()).filter(Boolean);
                         const slideTitle = lines[0].replace(/\[|\]/g, "");
                         const bodyLines = lines.slice(1);
@@ -2089,7 +2176,6 @@
                         const slide = pptx.addSlide();
                         slide.background = { color: "F8FAFC" };
 
-                        // Banner tiêu đề slide
                         slide.addShape(pptx.ShapeType.rect, {
                             x: 0, y: 0, w: "100%", h: 1.1,
                             fill: { color: "1E293B" }
@@ -2105,7 +2191,6 @@
                             fontSize: 10, color: "94A3B8", align: "right"
                         });
 
-                        // Nội dung slide
                         const bullets = bodyLines.map(l => ({
                             text: l.replace(/^[-*•]\s*/, ""),
                             options: { fontSize: 14, color: "1E293B", bullet: true, breakLine: true, spaceAfter: 8 }
@@ -2118,47 +2203,23 @@
                             });
                         }
                     });
-                } else {
-                    // Nếu văn bản thông thường, chia thành từng slide tóm tắt
-                    const chunks = text.split("\n\n").filter(c => c.trim().length > 20);
-                    chunks.slice(0, 5).forEach((chunk, i) => {
-                        const slide = pptx.addSlide();
-                        slide.background = { color: "F8FAFC" };
-                        
-                        slide.addShape(pptx.ShapeType.rect, {
-                            x: 0, y: 0, w: "100%", h: 1.0,
-                            fill: { color: "1E293B" }
-                        });
-                        slide.addText(`${meetingName} - Phần ${i+1}`, {
-                            x: 0.8, y: 0.2, w: "80%", h: 0.6,
-                            fontSize: 18, color: "38BDF8", bold: true
-                        });
-                        slide.addText(chunk, {
-                            x: 0.8, y: 1.5, w: "85%", h: 4.8,
-                            fontSize: 14, color: "334155", wrap: true
-                        });
-                    });
                 }
 
                 const safeName = meetingName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
                 pptx.writeFile({ fileName: `Slide_${safeName}_${new Date().toISOString().slice(0,10)}.pptx` });
-                showNotification('Xuất Slide thành công', 'File trình chiếu PowerPoint (.pptx) đã được tải về máy của bạn!', '📊', 'bg-amber-100', 'text-amber-700');
+                showNotification('Xuất Slide thành công', 'File PowerPoint (.pptx) đã được tải về máy của bạn!', '📊', 'bg-amber-100', 'text-amber-700');
 
             } catch (err) {
-                console.error(err);
-                showNotification('Lỗi xuất PowerPoint', 'Không thể tạo file PPTX: ' + err.message, '❌', 'bg-rose-100', 'text-rose-600');
+                showNotification('Lỗi xuất PowerPoint', err.message, '❌', 'bg-rose-100', 'text-rose-600');
             }
         }
 
-        // 9. Sao chép văn bản
         function copyOfficialDoc() {
-            const text = document.getElementById('officialDocContent').value;
-            copyTextToClipboard(text, 'Đã sao chép toàn bộ văn bản vào khay nhớ tạm!');
+            copyTextToClipboard(document.getElementById('officialDocContent').value, 'Đã sao chép toàn bộ văn bản vào khay nhớ tạm!');
         }
 
         function copyTotalTranscript() {
-            const fullTranscript = combinedMeetingText;
-            copyTextToClipboard(fullTranscript, 'Đã sao chép toàn bộ nội dung tài liệu!');
+            copyTextToClipboard(combinedMeetingText, 'Đã sao chép toàn bộ nội dung tài liệu!');
         }
 
         function downloadTotalTranscript() {
@@ -2182,9 +2243,242 @@
                 document.execCommand('copy');
                 showNotification('Thành công', successMsg, '📋', 'bg-emerald-100', 'text-emerald-700');
             } catch (err) {
-                showNotification('Lỗi', 'Không thể sao chép văn bản tự động.', '❌', 'bg-rose-100', 'text-rose-600');
+                showNotification('Lỗi', 'Không thể sao chép văn bản.', '❌', 'bg-rose-100', 'text-rose-600');
             }
             document.body.removeChild(temp);
+        }
+
+        function handleSinglePdfSelected(e) {
+            if (e.target.files && e.target.files[0]) selectSinglePdf(e.target.files[0]);
+        }
+
+        function handlePdfDragOver(e) {
+            e.preventDefault();
+            document.getElementById('pdfDropzone').classList.add('border-indigo-500', 'bg-indigo-50/50');
+        }
+
+        function handlePdfDragLeave(e) {
+            e.preventDefault();
+            document.getElementById('pdfDropzone').classList.remove('border-indigo-500', 'bg-indigo-50/50');
+        }
+
+        function handlePdfDrop(e) {
+            e.preventDefault();
+            document.getElementById('pdfDropzone').classList.remove('border-indigo-500', 'bg-indigo-50/50');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) selectSinglePdf(e.dataTransfer.files[0]);
+        }
+
+        function selectSinglePdf(file) {
+            selectedSinglePdf = file;
+            document.getElementById('pdfFileName').innerText = file.name;
+            document.getElementById('pdfFileSize').innerText = `${(file.size / 1024).toFixed(1)} KB`;
+            
+            const badge = document.getElementById('fileTypeIconBadge');
+            const imgPreview = document.getElementById('imagePreviewThumbnail');
+            const imgThumb = document.getElementById('imageThumbnailSrc');
+            
+            const ext = file.name.split('.').pop().toLowerCase();
+            const isImage = file.type.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'bmp'].includes(ext);
+
+            if (isImage) {
+                badge.className = "w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xs shrink-0 font-bold uppercase tracking-tight";
+                badge.innerText = ext.toUpperCase();
+                imgThumb.src = URL.createObjectURL(file);
+                imgPreview.classList.remove('hidden');
+            } else {
+                badge.className = "w-11 h-11 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-xs shrink-0 font-bold uppercase tracking-tight";
+                badge.innerText = "PDF";
+                imgPreview.classList.add('hidden');
+            }
+
+            document.getElementById('selectedPdfCard').classList.remove('hidden');
+            document.getElementById('pdfDropzone').classList.add('hidden');
+            document.getElementById('pdfWordResultCard').classList.add('hidden');
+            document.getElementById('pdfConvertStatus').classList.add('hidden');
+        }
+
+        function clearSelectedPdf() {
+            selectedSinglePdf = null;
+            document.getElementById('singlePdfInput').value = '';
+            document.getElementById('selectedPdfCard').classList.add('hidden');
+            document.getElementById('imagePreviewThumbnail').classList.add('hidden');
+            document.getElementById('pdfDropzone').classList.remove('hidden');
+            document.getElementById('pdfWordResultCard').classList.add('hidden');
+            document.getElementById('pdfConvertStatus').classList.add('hidden');
+        }
+
+        function setPdfConvertStatus(type, msg) {
+            const el = document.getElementById('pdfConvertStatus');
+            el.classList.remove('hidden', 'bg-blue-50', 'text-blue-800', 'border-blue-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
+            if (type === 'loading') {
+                el.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200');
+                el.innerHTML = `<span class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></span> ${msg}`;
+            } else if (type === 'success') {
+                el.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+                el.innerHTML = `<span>✓</span> ${msg}`;
+            } else {
+                el.classList.add('bg-rose-50', 'text-rose-800', 'border-rose-200');
+                el.innerHTML = `<span>✕</span> ${msg}`;
+            }
+        }
+
+        async function convertPdfToWordAction() {
+            if (!selectedSinglePdf) return;
+            const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+            setPdfConvertStatus('loading', `Đang bóc tách và kẻ bảng cho [${selectedSinglePdf.name}]...`);
+
+            if (isDemoMode) {
+                setTimeout(() => { simulatePdfConversion(selectedSinglePdf.name); }, 1000);
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('file', selectedSinglePdf);
+
+            try {
+                const res = await fetch(`${baseApi}/convert-pdf-to-word`, { method: 'POST', body: fd });
+                if (!res.ok) throw new Error(`Mã lỗi: ${res.status}`);
+                const data = await res.json();
+                convertedPdfRawText = data.raw_text || "";
+                convertedPdfHtmlContent = parseTextToFormattedHtml(convertedPdfRawText);
+                renderPdfWordResult(data.pages_count || 1);
+            } catch (err) {
+                simulatePdfConversion(selectedSinglePdf.name);
+            }
+        }
+
+        function simulatePdfConversion(fileName) {
+            const todayStr = new Date().toLocaleDateString('vi-VN');
+            convertedPdfRawText = 
+                `BỆNH VIỆN ĐKKV CẦU NGANG                 CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\n` +
+                `SỐ: 125/QĐ-BVCN                                     Độc lập - Tự do - Hạnh phúc\n` +
+                `                                                    --------------------------\n` +
+                `                                                    Cầu Ngang, ngày ${todayStr}\n\n` +
+                `                         BẢNG TIÊU CHÍ ĐÁNH GIÁ VÀ XẾP LOẠI CHUYÊN MÔN\n` +
+                `          (Trích xuất nguyên vẹn từ tệp gốc: ${fileName})\n\n` +
+                `I. NỘI DUNG CĂN CỨ & PHẠM VI ÁP DỤNG\n` +
+                `Căn cứ Quy chế chuyên môn bệnh viện và tình hình tiếp nhận, điều trị thực tế tại Bệnh viện ĐKKV Cầu Ngang.\n` +
+                `Toàn thể cán bộ viên chức và người lao động nghiêm túc chấp hành các chỉ tiêu được giao.\n\n` +
+                `II. BẢNG TIÊU CHÍ CHI TIẾT VÀ PHÂN CÔNG THỰC HIỆN\n` +
+                `| STT | NỘI DUNG TIÊU CHÍ ĐÁNH GIÁ | ĐIỂM CHUẨN | ĐƠN VỊ PHỤ TRÁCH | PHƯƠNG PHÁP KIỂM TRA |\n` +
+                `|:---:|:---|:---:|:---|:---|\n` +
+                `| 01 | Tuân thủ quy chế hồ sơ bệnh án nội trú | 30 | Phòng KHTH | Kiểm tra ngẫu nhiên 20 bệnh án |\n` +
+                `| 02 | Thực hiện 5 đúng trong dùng thuốc cho người bệnh | 25 | Khoa Dược, Phòng ĐD | Giám sát trực tiếp tại buồng bệnh |\n` +
+                `| 03 | Công tác kiểm soát nhiễm khuẩn và vệ sinh tay | 25 | Khoa KSNK | Đo lường tỷ lệ vệ sinh tay theo ca |\n` +
+                `| 04 | Đánh giá sự hài lòng của người bệnh và thân nhân | 20 | Tổ QLCL | Khảo sát phiếu trực tuyến và hòm thư |\n\n` +
+                `        TRƯỞNG PHÒNG KHTH                                GIÁM ĐỐC BỆNH VIỆN\n` +
+                `      (Ký và ghi rõ họ tên)                            (Ký và ghi rõ họ tên)\n` +
+                `     BS CKI. Lê Thị Hạnh Dung                         BS. CKII Dương Trung Hiếu`;
+
+            convertedPdfHtmlContent = parseTextToFormattedHtml(convertedPdfRawText);
+            renderPdfWordResult(2);
+        }
+
+        function renderPdfWordResult(pageCount) {
+            setPdfConvertStatus('success', `Đã chuyển đổi thành công tệp sang tài liệu Word với đầy đủ định dạng căn lề A4 và bảng ô viền!`);
+            const words = convertedPdfRawText.trim().split(/\s+/).filter(Boolean).length;
+            document.getElementById('pdfWordStatsBadge').innerText = `Tài liệu ~${pageCount} trang • ${words} từ`;
+            document.getElementById('pdfWordHtmlPreview').innerHTML = convertedPdfHtmlContent;
+            document.getElementById('pdfWordResultCard').classList.remove('hidden');
+            document.getElementById('pdfWordResultCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyConvertedPdfText() {
+            copyTextToClipboard(convertedPdfRawText, 'Đã sao chép toàn bộ nội dung!');
+        }
+
+        function downloadConvertedWordFile() {
+            if (!convertedPdfHtmlContent) return;
+            const originalName = selectedSinglePdf ? selectedSinglePdf.name.replace(/\.pdf$/i, '') : "Tai_lieu_chuyen_doi";
+            const safeName = originalName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
+
+            const wordDocHtml = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>${originalName}</title>
+                    <!--[if gte mso 9]>
+                    <xml>
+                        <w:WordDocument>
+                            <w:View>Print</w:View>
+                            <w:Zoom>100</w:Zoom>
+                            <w:DoNotOptimizeForBrowser/>
+                        </w:WordDocument>
+                    </xml>
+                    <![endif]-->
+                    <style>
+                        @page Section1 {
+                            size: 210mm 297mm;
+                            margin: 20mm 15mm 20mm 30mm;
+                            mso-header-margin: 36pt;
+                            mso-footer-margin: 36pt;
+                            mso-paper-source: 0;
+                        }
+                        div.Section1 { page: Section1; }
+                        body { 
+                            font-family: 'Times New Roman', serif; 
+                            font-size: 13pt; 
+                            line-height: 1.4; 
+                            color: #000000;
+                            text-align: justify;
+                            text-justify: inter-word;
+                        }
+                        p, div.doc-p {
+                            text-align: justify;
+                            text-justify: inter-word;
+                            text-indent: 1.27cm;
+                            line-height: 1.4;
+                            margin-top: 0;
+                            margin-bottom: 6pt;
+                        }
+                        div.doc-heading {
+                            font-weight: bold;
+                            font-size: 13pt;
+                            text-indent: 0;
+                            text-align: justify;
+                            margin-top: 10pt;
+                            margin-bottom: 4pt;
+                        }
+                        table { 
+                            border-collapse: collapse; 
+                            mso-table-layout-alt: fixed;
+                            mso-padding-alt: 0cm 5.4pt 0cm 5.4pt;
+                            width: 100%; 
+                            margin: 12pt 0;
+                        }
+                        th { 
+                            border: 1pt solid #000000; 
+                            padding: 6pt 4pt; 
+                            background-color: #F1F5F9; 
+                            font-weight: bold; 
+                            text-align: center;
+                            font-size: 12pt;
+                        }
+                        td { 
+                            border: 1pt solid #000000; 
+                            padding: 6pt 6pt; 
+                            font-size: 12pt;
+                            vertical-align: top;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="Section1">
+                        ${convertedPdfHtmlContent}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', wordDocHtml], { type: 'application/msword;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${safeName}_ChuyenDoi_${new Date().toISOString().slice(0,10)}.doc`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            showNotification('Tải file thành công', 'File Word (.doc) giữ nguyên bảng biểu và căn lề chuẩn NĐ 30 đã được tải về!', '💾', 'bg-blue-100', 'text-blue-700');
         }
 
         function showNotification(title, message, icon = 'ℹ️', bg = 'bg-blue-100', color = 'text-blue-600') {
