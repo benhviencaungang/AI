@@ -1144,56 +1144,77 @@
         }
 
         async function startEnrollRecording() {
-            const name = document.getElementById('enrollSpeakerName').value.trim();
-            if (!name) {
-                showNotification('Chưa nhập tên', 'Vui lòng nhập họ và tên của người phát biểu trước khi bấm đọc mẫu.', '⚠️', 'bg-amber-100', 'text-amber-700');
-                document.getElementById('enrollSpeakerName').focus();
-                return;
+                const name = document.getElementById('enrollSpeakerName').value.trim();
+                if (!name) {
+                    showNotification('Chưa nhập tên', 'Vui lòng nhập họ và tên của người phát biểu trước khi bấm đọc mẫu.', '⚠️', 'bg-amber-100', 'text-amber-700');
+                    document.getElementById('enrollSpeakerName').focus();
+                    return;
+                }
+
+                // 1. KIỂM TRA HỖ TRỢ TRÌNH DUYỆT / BẮT BUỘC HTTPS TRÊN DI ĐỘNG
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showNotification('Lỗi Bảo Mật (HTTPS)', 'Trình duyệt trên điện thoại chặn Micro vì bạn chưa truy cập qua đường dẫn bảo mật HTTPS, hoặc trình duyệt không hỗ trợ.', '🚫', 'bg-rose-100', 'text-rose-700');
+                    return;
+                }
+
+                try {
+                    // 2. TỐI ƯU CẤU HÌNH XIN QUYỀN CHO DI ĐỘNG (IOS / ANDROID)
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true
+                        }
+                    });
+
+                    enrollMediaRecorder = new MediaRecorder(stream);
+                    enrollChunks = [];
+                    enrollSeconds = 0;
+
+                    enrollMediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) enrollChunks.push(e.data);
+                    };
+
+                    enrollMediaRecorder.onstop = async () => {
+                        clearInterval(enrollTimer);
+                        // Hỗ trợ fallback chuẩn cho iOS Safari
+                        const mimeType = enrollMediaRecorder.mimeType || (MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : 'audio/webm');
+                        latestEnrollBlob = new Blob(enrollChunks, { type: mimeType });
+                        stream.getTracks().forEach(t => t.stop());
+
+                        document.getElementById('btnStartEnrollRecord').disabled = false;
+                        document.getElementById('btnStopEnrollRecord').disabled = true;
+                        document.getElementById('btnStopEnrollRecord').className = "px-4 py-2 bg-slate-200 text-slate-400 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-not-allowed";
+                        document.getElementById('enrollStatusText').innerText = "✓ Đã thu mẫu xong! Bấm nghe lại hoặc Lưu vào hệ thống";
+
+                        const audioPreview = document.getElementById('enrollAudioPreview');
+                        audioPreview.src = URL.createObjectURL(latestEnrollBlob);
+                        document.getElementById('enrollPreviewArea').classList.remove('hidden');
+                    };
+
+                    enrollMediaRecorder.start(250);
+                    document.getElementById('btnStartEnrollRecord').disabled = true;
+                    document.getElementById('btnStopEnrollRecord').disabled = false;
+                    document.getElementById('btnStopEnrollRecord').className = "px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition animate-pulse";
+                    document.getElementById('enrollStatusText').innerText = "Đang thu âm... Hãy đọc to rõ đoạn văn bản trên!";
+                    document.getElementById('enrollPreviewArea').classList.add('hidden');
+
+                    enrollTimer = setInterval(() => {
+                        enrollSeconds++;
+                        const m = Math.floor(enrollSeconds / 60).toString().padStart(2, '0');
+                        const s = (enrollSeconds % 60).toString().padStart(2, '0');
+                        document.getElementById('enrollTimerText').innerText = `${m}:${s}`;
+                    }, 1000);
+
+                } catch (err) {
+                    // Xử lý báo lỗi nếu người dùng bấm "Từ chối" trên điện thoại
+                    let errorMsg = 'Vui lòng cho phép trình duyệt truy cập micro để đọc mẫu.';
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                        errorMsg = 'Bạn đã từ chối quyền Micro. Vui lòng vào Cài đặt trình duyệt để cấp lại quyền.';
+                    }
+                    showNotification('Không truy cập được Micro', errorMsg, '⚠️', 'bg-amber-100', 'text-amber-600');
+                }
             }
-
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                enrollMediaRecorder = new MediaRecorder(stream);
-                enrollChunks = [];
-                enrollSeconds = 0;
-
-                enrollMediaRecorder.ondataavailable = e => {
-                    if (e.data.size > 0) enrollChunks.push(e.data);
-                };
-
-                enrollMediaRecorder.onstop = async () => {
-                    clearInterval(enrollTimer);
-                    latestEnrollBlob = new Blob(enrollChunks, { type: enrollMediaRecorder.mimeType || 'audio/webm' });
-                    stream.getTracks().forEach(t => t.stop());
-
-                    document.getElementById('btnStartEnrollRecord').disabled = false;
-                    document.getElementById('btnStopEnrollRecord').disabled = true;
-                    document.getElementById('btnStopEnrollRecord').className = "px-4 py-2 bg-slate-200 text-slate-400 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-not-allowed";
-                    document.getElementById('enrollStatusText').innerText = "✓ Đã thu mẫu xong! Bấm nghe lại hoặc Lưu vào hệ thống";
-
-                    const audioPreview = document.getElementById('enrollAudioPreview');
-                    audioPreview.src = URL.createObjectURL(latestEnrollBlob);
-                    document.getElementById('enrollPreviewArea').classList.remove('hidden');
-                };
-
-                enrollMediaRecorder.start(250);
-                document.getElementById('btnStartEnrollRecord').disabled = true;
-                document.getElementById('btnStopEnrollRecord').disabled = false;
-                document.getElementById('btnStopEnrollRecord').className = "px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition animate-pulse";
-                document.getElementById('enrollStatusText').innerText = "Đang thu âm... Hãy đọc to rõ đoạn văn bản trên!";
-                document.getElementById('enrollPreviewArea').classList.add('hidden');
-
-                enrollTimer = setInterval(() => {
-                    enrollSeconds++;
-                    const m = Math.floor(enrollSeconds / 60).toString().padStart(2, '0');
-                    const s = (enrollSeconds % 60).toString().padStart(2, '0');
-                    document.getElementById('enrollTimerText').innerText = `${m}:${s}`;
-                }, 1000);
-
-            } catch (err) {
-                showNotification('Không truy cập được Micro', 'Vui lòng cho phép trình duyệt truy cập micro để đọc mẫu.', '⚠️', 'bg-amber-100', 'text-amber-600');
-            }
-        }
 
         function stopEnrollRecording() {
             if (enrollMediaRecorder && enrollMediaRecorder.state !== 'inactive') {
