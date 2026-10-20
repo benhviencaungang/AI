@@ -584,43 +584,59 @@
 
         <!-- KHUNG 3: HỎI ĐÁP TÀI LIỆU & AI -->
         <div id="tabContent_chat" class="hidden space-y-4 h-[75vh] flex flex-col">
-            <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-2xl p-4 shadow-sm shrink-0">
+            <div
+                class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-2xl p-4 shadow-sm shrink-0">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-2.5">
                         <span class="p-2 bg-purple-600 text-white rounded-xl text-lg shadow-sm">💬</span>
                         <div>
                             <h2 class="text-base font-bold text-slate-900">Trợ Lý AI & Hỏi Đáp Tài Liệu</h2>
-                            <p class="text-xs text-slate-600">Tải file lên (PDF, Word, TXT) và đặt câu hỏi trực tiếp cho AI</p>
+                            <p class="text-xs text-slate-600">Tải file lên (PDF, Word, TXT) và đặt câu hỏi trực tiếp cho
+                                AI</p>
                         </div>
                     </div>
-                    <button onclick="document.getElementById('chatFileInput').click()" class="px-4 py-2 bg-white border border-purple-200 hover:bg-purple-50 text-purple-700 text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2 shrink-0">
+                    <button onclick="document.getElementById('chatFileInput').click()"
+                        class="px-4 py-2 bg-white border border-purple-200 hover:bg-purple-50 text-purple-700 text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2 shrink-0">
                         <span>📎</span> Đính kèm File
                     </button>
-                    <input type="file" id="chatFileInput" multiple accept=".pdf,.docx,.doc,.txt,.csv" class="hidden" onchange="handleChatFilesSelected(event)">
+                    <input type="file" id="chatFileInput" multiple accept=".pdf,.docx,.doc,.txt,.csv" class="hidden"
+                        onchange="handleChatFilesSelected(event)">
                 </div>
                 <!-- Khung hiển thị file đang đính kèm -->
-                <div id="chatFileListContainer" class="hidden mt-3 flex flex-wrap gap-2 pt-2 border-t border-purple-200/50"></div>
+                <div id="chatFileListContainer"
+                    class="hidden mt-3 flex flex-wrap gap-2 pt-2 border-t border-purple-200/50"></div>
             </div>
 
             <!-- Chat Window -->
-            <div id="chatWindow" class="flex-1 bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 overflow-y-auto custom-scrollbar space-y-4 shadow-inner">
+            <div id="chatWindow"
+                class="flex-1 bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 overflow-y-auto custom-scrollbar space-y-4 shadow-inner">
                 <!-- Welcome message -->
                 <div class="flex gap-3">
-                    <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0 text-sm shadow-sm border border-purple-200">🤖</div>
-                    <div class="bg-slate-100 p-3.5 rounded-2xl rounded-tl-none text-sm text-slate-800 max-w-[85%] border border-slate-200/60 leading-relaxed shadow-sm">
+                    <div
+                        class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0 text-sm shadow-sm border border-purple-200">
+                        🤖</div>
+                    <div
+                        class="bg-slate-100 p-3.5 rounded-2xl rounded-tl-none text-sm text-slate-800 max-w-[85%] border border-slate-200/60 leading-relaxed shadow-sm">
                         Chào bạn! Tôi là Trợ lý AI Bệnh viện. <br>
-                        Bạn có thể hỏi tôi bất cứ điều gì, hoặc bấm <b>"Đính kèm File"</b> để tải tài liệu lên, tôi sẽ đọc và tóm tắt, trích xuất thông tin, giải đáp các nội dung bên trong file giúp bạn nhé!
+                        Bạn có thể hỏi tôi bất cứ điều gì, hoặc bấm <b>"Đính kèm File"</b> để tải tài liệu lên, tôi sẽ
+                        đọc và tóm tắt, trích xuất thông tin, giải đáp các nội dung bên trong file giúp bạn nhé!
                     </div>
                 </div>
             </div>
 
             <!-- Chat Input -->
             <div class="shrink-0 bg-white border border-slate-200 rounded-2xl p-2.5 shadow-sm flex items-end gap-2">
-                <textarea id="chatInputMsg" rows="1" placeholder="Nhập câu hỏi của bạn tại đây... (Shift + Enter để xuống dòng)" 
-                    class="flex-1 max-h-32 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-500 custom-scrollbar resize-none transition" 
+                <textarea id="chatInputMsg" rows="1"
+                    placeholder="Nhập câu hỏi của bạn tại đây... (Shift + Enter để xuống dòng)"
+                    class="flex-1 max-h-32 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-500 custom-scrollbar resize-none transition"
                     onkeydown="handleChatInputKeydown(event)"></textarea>
-                <button onclick="sendChatMessage()" class="p-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-md transition flex items-center justify-center shrink-0 h-auto">
-                    <svg class="w-5 h-5 translate-x-[-1px] translate-y-[1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                <button onclick="sendChatMessage()"
+                    class="p-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-md transition flex items-center justify-center shrink-0 h-auto">
+                    <svg class="w-5 h-5 translate-x-[-1px] translate-y-[1px]" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
                 </button>
             </div>
         </div>
@@ -959,10 +975,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadSpeakerList();
             checkAiModelConnection();
-            
+
             // Lắng nghe sự kiện co giãn của khung nhập chat
             const chatInput = document.getElementById('chatInputMsg');
-            if(chatInput) {
+            if (chatInput) {
                 chatInput.addEventListener('input', adjustChatInputHeight);
             }
         });
@@ -973,7 +989,7 @@
                 const btn = document.getElementById(`tabBtn_${t}`);
                 const content = document.getElementById(`tabContent_${t}`);
                 if (!btn || !content) return;
-                
+
                 if (t === tabName) {
                     btn.className = "flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition shadow-sm bg-white text-blue-700 border border-slate-200/80";
                     content.classList.remove('hidden');
@@ -987,14 +1003,20 @@
         // ================== QUẢN LÝ DANH BẠ GIỌNG & ĐOẠN ĐỌC CHUẨN ==================
 
         function closeSpeakerModal() {
-            document.getElementById('speakerModal').classList.add('hidden');
-            if (enrollMediaRecorder && enrollMediaRecorder.state === 'recording') enrollMediaRecorder.stop();
-            if (testMediaRecorder && testMediaRecorder.state === 'recording') testMediaRecorder.stop();
-        }
+                document.getElementById('speakerModal').classList.add('hidden');
+                if (enrollMediaRecorder && enrollMediaRecorder.state === 'recording') enrollMediaRecorder.stop();
+                if (testMediaRecorder && testMediaRecorder.state === 'recording') testMediaRecorder.stop();
+            }
 
-        function openEnrollVoiceModal() {
-            openSpeakerModal('enroll');
-        }
+            // 1. THÊM HÀM NÀY VÀO ĐÂY:
+            function openSpeakerModal(tab = 'list') {
+                document.getElementById('speakerModal').classList.remove('hidden');
+                switchSpeakerSubTab(tab);
+            }
+
+            function openEnrollVoiceModal() {
+                openSpeakerModal('enroll');
+            }
 
         function switchSpeakerSubTab(tab) {
             const tabs = ['enroll', 'list', 'test'];
@@ -1072,7 +1094,7 @@
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 2500);
-                const res = await fetch(`${baseApi}/speaker/list`, {signal: controller.signal});
+                const res = await fetch(`${baseApi}/speaker/list`, { signal: controller.signal });
                 clearTimeout(timeoutId);
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1130,7 +1152,7 @@
             }
 
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 enrollMediaRecorder = new MediaRecorder(stream);
                 enrollChunks = [];
                 enrollSeconds = 0;
@@ -1141,7 +1163,7 @@
 
                 enrollMediaRecorder.onstop = async () => {
                     clearInterval(enrollTimer);
-                    latestEnrollBlob = new Blob(enrollChunks, {type: enrollMediaRecorder.mimeType || 'audio/webm'});
+                    latestEnrollBlob = new Blob(enrollChunks, { type: enrollMediaRecorder.mimeType || 'audio/webm' });
                     stream.getTracks().forEach(t => t.stop());
 
                     document.getElementById('btnStartEnrollRecord').disabled = false;
@@ -1216,7 +1238,7 @@
                 fd.append('file', latestEnrollBlob, `voice_${Date.now()}.webm`);
 
                 try {
-                    await fetch(`${baseApi}/speaker/enroll`, {method: 'POST', body: fd});
+                    await fetch(`${baseApi}/speaker/enroll`, { method: 'POST', body: fd });
                 } catch (e) {
                     console.warn('Lưu máy chủ ngoại tuyến, đã lưu vào danh bạ cục bộ.');
                 }
@@ -1228,15 +1250,15 @@
 
         async function startTestVoiceRecord() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 testMediaRecorder = new MediaRecorder(stream);
                 testChunks = [];
                 testSeconds = 0;
 
-                testMediaRecorder.ondataavailable = e => {if (e.data.size > 0) testChunks.push(e.data);};
+                testMediaRecorder.ondataavailable = e => { if (e.data.size > 0) testChunks.push(e.data); };
                 testMediaRecorder.onstop = async () => {
                     clearInterval(testTimer);
-                    latestTestBlob = new Blob(testChunks, {type: testMediaRecorder.mimeType || 'audio/webm'});
+                    latestTestBlob = new Blob(testChunks, { type: testMediaRecorder.mimeType || 'audio/webm' });
                     stream.getTracks().forEach(t => t.stop());
                     document.getElementById('btnStartTestRecord').disabled = false;
                     document.getElementById('btnStopTestRecord').disabled = true;
@@ -1291,7 +1313,7 @@
             fd.append('file', blob, 'test_sample.webm');
 
             try {
-                const res = await fetch(`${baseApi}/speaker/identify`, {method: 'POST', body: fd});
+                const res = await fetch(`${baseApi}/speaker/identify`, { method: 'POST', body: fd });
                 const data = await res.json();
 
                 if (data.identified && data.speaker) {
@@ -1328,7 +1350,7 @@
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             try {
                 if (!isDemoMode) {
-                    await fetch(`${baseApi}/speaker/${id}`, {method: 'DELETE'});
+                    await fetch(`${baseApi}/speaker/${id}`, { method: 'DELETE' });
                 }
             } catch (e) { }
 
@@ -1374,7 +1396,7 @@
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 2500);
-                const res = await fetch(`${baseApi}/ai/model-status`, {cache: 'no-cache', signal: controller.signal});
+                const res = await fetch(`${baseApi}/ai/model-status`, { cache: 'no-cache', signal: controller.signal });
                 clearTimeout(timeoutId);
                 const data = await res.json();
 
@@ -1413,7 +1435,7 @@
             resBox.classList.remove('hidden');
 
             try {
-                const response = await fetch(`${inputVal}/ai/model-status`, {cache: 'no-cache'});
+                const response = await fetch(`${inputVal}/ai/model-status`, { cache: 'no-cache' });
                 if (!response.ok) throw new Error(`Mã phản hồi: ${response.status}`);
                 const data = await response.json();
 
@@ -1450,7 +1472,7 @@
             if (mediaRecorder && mediaRecorder.state === "recording") return;
 
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 recordSeconds = 0;
@@ -1467,12 +1489,12 @@
                     clearInterval(recordInterval);
                     const mimeType = mediaRecorder.mimeType || 'audio/webm';
                     const ext = mimeType.includes('mp4') ? 'm4a' : (mimeType.includes('ogg') ? 'ogg' : 'webm');
-                    latestRecordedBlob = new Blob(audioChunks, {type: mimeType});
+                    latestRecordedBlob = new Blob(audioChunks, { type: mimeType });
 
                     const now = new Date();
                     const timeStr = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
                     const fileName = `Ghi_am_truc_tiep_${timeStr}.${ext}`;
-                    latestRecordedFile = new File([latestRecordedBlob], fileName, {type: mimeType});
+                    latestRecordedFile = new File([latestRecordedBlob], fileName, { type: mimeType });
 
                     addFiles([latestRecordedFile]);
 
@@ -1628,7 +1650,7 @@
             fd.append('file', file);
 
             try {
-                const res = await fetch(`${baseApi}/speaker/identify`, {method: 'POST', body: fd});
+                const res = await fetch(`${baseApi}/speaker/identify`, { method: 'POST', body: fd });
                 const data = await res.json();
 
                 if (data.identified && data.speaker) {
@@ -1767,7 +1789,7 @@
             }
 
             const formData = new FormData();
-            selectedFiles.forEach(file => {formData.append('files', file);});
+            selectedFiles.forEach(file => { formData.append('files', file); });
             formData.append('meeting_name', meetingName);
             if (promptVal) formData.append('prompt', promptVal);
 
@@ -1865,9 +1887,9 @@
             document.getElementById('analysisSection').classList.remove('hidden');
 
             renderDirectives([
-                {type: 'cong_van', title: 'Công văn xin ý kiến / Báo cáo Ban Giám Đốc'},
-                {type: 'bien_ban', title: 'Biên bản cuộc họp chính thức'},
-                {type: 'phan_cong_nhiem_vu', title: 'Sơ đồ Phân Công Nhiệm Vụ'}
+                { type: 'cong_van', title: 'Công văn xin ý kiến / Báo cáo Ban Giám Đốc' },
+                { type: 'bien_ban', title: 'Biên bản cuộc họp chính thức' },
+                { type: 'phan_cong_nhiem_vu', title: 'Sơ đồ Phân Công Nhiệm Vụ' }
             ]);
 
             document.getElementById('resultCard').classList.remove('hidden');
@@ -1992,7 +2014,7 @@
             }
 
             document.getElementById('officialDocCard').classList.remove('hidden');
-            document.getElementById('officialDocCard').scrollIntoView({behavior: 'smooth'});
+            document.getElementById('officialDocCard').scrollIntoView({ behavior: 'smooth' });
         }
 
         function toggleDocViewMode() {
@@ -2044,7 +2066,7 @@
 
             for (let i = 0; i < lines.length; i++) {
                 // Giữ lại khoảng trắng gốc để nhận diện 2 cột
-                let originalLine = lines[i].replace(/\r/g, ''); 
+                let originalLine = lines[i].replace(/\r/g, '');
                 let line = originalLine.trim();
                 let formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
@@ -2058,7 +2080,7 @@
                     continue;
                 } else {
                     if (inTable) htmlOut += flushTable();
-                    
+
                     if (line.length === 0) {
                         htmlOut += '<div style="height:6pt;"></div>';
                         continue;
@@ -2070,14 +2092,14 @@
                         if (parts.length >= 2) {
                             let leftText = parts[0].trim().replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
                             let rightText = parts.slice(1).join(' ').trim().replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-                            
+
                             // Định dạng chuẩn xác Quốc hiệu / Tiêu ngữ
                             let rightStyle = (rightText.toUpperCase().includes('CỘNG HÒA') || rightText.includes('Độc lập')) ? 'font-weight:bold;' : '';
                             if (rightText.includes('Độc lập')) rightStyle += ' text-decoration:underline;';
 
                             // Định dạng chuẩn xác Cơ quan
                             let isLeftGov = leftText.toUpperCase().includes('UBND') || leftText.toUpperCase().includes('SỞ') || leftText.toUpperCase().includes('BỆNH VIỆN');
-                            let leftStyle = isLeftGov && !leftText.toUpperCase().includes('UBND') ? 'font-weight:bold;' : ''; 
+                            let leftStyle = isLeftGov && !leftText.toUpperCase().includes('UBND') ? 'font-weight:bold;' : '';
                             if (leftText.toUpperCase().includes('SỞ Y TẾ')) leftStyle += ' text-decoration:underline;';
 
                             htmlOut += `
@@ -2097,7 +2119,7 @@
 
                     // 2. Dòng dấu gạch ngang dưới Tiêu ngữ
                     if (line.includes('-------------')) {
-                         htmlOut += `
+                        htmlOut += `
                          <table style="width:100%; border:none; border-collapse:collapse; margin-bottom:0pt; font-family:'Times New Roman', serif;">
                              <tr>
                                  <td style="width:40%; border:none;"></td>
@@ -2106,7 +2128,7 @@
                                  </td>
                              </tr>
                          </table>`;
-                         continue;
+                        continue;
                     }
 
                     // 3. Dòng ngày tháng năm (Căn vào cột phải)
@@ -2160,7 +2182,7 @@
                     if (line.includes('(Ký và ghi rõ họ tên)')) {
                         continue;
                     }
-                    
+
                     // 7. Văn bản bình thường
                     const isHeading = /^([I|V|X]+\.|\d+\.|\bĐiều \d+|\bChương [I|V|X]+)/i.test(line) || line.startsWith('###');
                     if (isHeading) {
@@ -2319,7 +2341,7 @@
                 </html>
             `;
 
-            const blob = new Blob(['\ufeff', wordHtml], {type: 'application/msword;charset=utf-8'});
+            const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `${currentDocumentType.toUpperCase()}_${safeName}_${new Date().toISOString().slice(0, 10)}.doc`;
@@ -2346,7 +2368,7 @@
                 pptx.company = "Sở Y tế Vĩnh Long - BVĐKKV Cầu Ngang";
 
                 const slide1 = pptx.addSlide();
-                slide1.background = {color: "0F172A"};
+                slide1.background = { color: "0F172A" };
 
                 slide1.addText("SỞ Y TẾ VĨNH LONG • BỆNH VIỆN ĐKKV CẦU NGANG", {
                     x: 0.8, y: 1.2, w: "85%", h: 0.5,
@@ -2372,11 +2394,11 @@
                         const bodyLines = lines.slice(1);
 
                         const slide = pptx.addSlide();
-                        slide.background = {color: "F8FAFC"};
+                        slide.background = { color: "F8FAFC" };
 
                         slide.addShape(pptx.ShapeType.rect, {
                             x: 0, y: 0, w: "100%", h: 1.1,
-                            fill: {color: "1E293B"}
+                            fill: { color: "1E293B" }
                         });
 
                         slide.addText(slideTitle, {
@@ -2391,7 +2413,7 @@
 
                         const bullets = bodyLines.map(l => ({
                             text: l.replace(/^[-*•]\s*/, ""),
-                            options: {fontSize: 14, color: "1E293B", bullet: true, breakLine: true, spaceAfter: 8}
+                            options: { fontSize: 14, color: "1E293B", bullet: true, breakLine: true, spaceAfter: 8 }
                         }));
 
                         if (bullets.length > 0) {
@@ -2404,7 +2426,7 @@
                 }
 
                 const safeName = meetingName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
-                pptx.writeFile({fileName: `Slide_${safeName}_${new Date().toISOString().slice(0, 10)}.pptx`});
+                pptx.writeFile({ fileName: `Slide_${safeName}_${new Date().toISOString().slice(0, 10)}.pptx` });
                 showNotification('Xuất Slide thành công', 'File PowerPoint (.pptx) đã được tải về máy của bạn!', '📊', 'bg-amber-100', 'text-amber-700');
 
             } catch (err) {
@@ -2423,7 +2445,7 @@
         function downloadTotalTranscript() {
             const meetingName = document.getElementById('meetingNameInput').value.trim() || "Cuoc_hop";
             const safeName = meetingName.replace(/[^a-zA-Z0-9_\u00C0-\u1EF9]/g, "_");
-            const blob = new Blob([combinedMeetingText], {type: 'text/plain;charset=utf-8'});
+            const blob = new Blob([combinedMeetingText], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `Tong_hop_${safeName}_${new Date().toISOString().slice(0, 10)}.txt`;
@@ -2526,7 +2548,7 @@
             setPdfConvertStatus('loading', `Đang bóc tách và kẻ bảng cho [${selectedSinglePdf.name}]...`);
 
             if (isDemoMode) {
-                setTimeout(() => {simulatePdfConversion(selectedSinglePdf.name);}, 1000);
+                setTimeout(() => { simulatePdfConversion(selectedSinglePdf.name); }, 1000);
                 return;
             }
 
@@ -2534,7 +2556,7 @@
             fd.append('file', selectedSinglePdf);
 
             try {
-                const res = await fetch(`${baseApi}/convert-pdf-to-word`, {method: 'POST', body: fd});
+                const res = await fetch(`${baseApi}/convert-pdf-to-word`, { method: 'POST', body: fd });
                 if (!res.ok) throw new Error(`Mã lỗi: ${res.status}`);
                 const data = await res.json();
                 convertedPdfRawText = data.raw_text || "";
@@ -2579,7 +2601,7 @@
             document.getElementById('pdfWordStatsBadge').innerText = `Tài liệu ~${pageCount} trang • ${words} từ`;
             document.getElementById('pdfWordHtmlPreview').innerHTML = convertedPdfHtmlContent;
             document.getElementById('pdfWordResultCard').classList.remove('hidden');
-            document.getElementById('pdfWordResultCard').scrollIntoView({behavior: 'smooth'});
+            document.getElementById('pdfWordResultCard').scrollIntoView({ behavior: 'smooth' });
         }
 
         function copyConvertedPdfText() {
@@ -2641,7 +2663,7 @@
                 </html>
             `;
 
-            const blob = new Blob(['\ufeff', wordDocHtml], {type: 'application/msword;charset=utf-8'});
+            const blob = new Blob(['\ufeff', wordDocHtml], { type: 'application/msword;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `${safeName}_ChuyenDoi_${new Date().toISOString().slice(0, 10)}.doc`;
@@ -2670,7 +2692,7 @@
         let chatContextFiles = [];
 
         function handleChatFilesSelected(e) {
-            if(e.target.files && e.target.files.length > 0) {
+            if (e.target.files && e.target.files.length > 0) {
                 chatContextFiles = [...chatContextFiles, ...Array.from(e.target.files)];
                 renderChatFiles();
                 document.getElementById('chatInputMsg').focus();
@@ -2684,7 +2706,7 @@
 
         function renderChatFiles() {
             const container = document.getElementById('chatFileListContainer');
-            if(chatContextFiles.length === 0) {
+            if (chatContextFiles.length === 0) {
                 container.classList.add('hidden');
                 container.innerHTML = '';
                 return;
@@ -2719,7 +2741,7 @@
 
             // 1. In tin nhắn người dùng lên UI
             appendMessage('user', msg, chatContextFiles);
-            
+
             // 2. Reset khung nhập và file
             inputEl.value = '';
             adjustChatInputHeight();
@@ -2734,7 +2756,7 @@
             if (isDemoMode) {
                 setTimeout(() => {
                     removeLoading(loadingId);
-                    const aiResp = currentFiles.length > 0 
+                    const aiResp = currentFiles.length > 0
                         ? `Tôi đã tiếp nhận ${currentFiles.length} tệp tài liệu bạn gửi đính kèm.\n\nDựa trên nội dung tệp, đây là phân tích mô phỏng cho câu hỏi **"${msg}"** của bạn:\n- Tài liệu cung cấp các quy định về quy chế chuyên môn và tiêu chí đánh giá tại bệnh viện.\n- Các đơn vị liên quan cần phối hợp thực hiện theo lộ trình đã đề ra.\n\nBạn cần tôi tóm tắt chi tiết thêm ở phần nào không?`
                         : `Đây là câu trả lời mô phỏng cho câu hỏi **"${msg}"** của bạn. AI đã ghi nhận yêu cầu và có thể trả lời các vấn đề về hành chính, y tế. Trong chế độ thực tế, tôi sẽ kết nối với máy chủ để đưa ra câu trả lời chuyên sâu hơn.`;
                     appendMessage('ai', aiResp);
@@ -2745,23 +2767,23 @@
             // Gửi API thực tế
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             const formData = new FormData();
-            if(msg) formData.append('message', msg);
+            if (msg) formData.append('message', msg);
             currentFiles.forEach(f => formData.append('files', f));
 
             try {
                 // Gọi tới endpoint /chat trên Backend
                 const res = await fetch(`${baseApi}/chat`, { method: 'POST', body: formData });
-                
-                if(!res.ok) {
+
+                if (!res.ok) {
                     if (res.status === 404) {
                         throw new Error(`Lỗi 404: Backend chưa có API "/chat". Vui lòng lập trình thêm endpoint này trên Server`);
                     }
                     throw new Error(`Mã lỗi: ${res.status}`);
                 }
-                
+
                 const data = await res.json();
                 removeLoading(loadingId);
-                
+
                 // Parse text đơn giản để hiển thị xuống dòng
                 const replyText = data.reply || data.answer || data.response || "Tôi đã nhận được thông tin.";
                 appendMessage('ai', replyText);
@@ -2775,20 +2797,20 @@
             const chatWindow = document.getElementById('chatWindow');
             const div = document.createElement('div');
             div.className = "flex gap-3 " + (role === 'user' ? "flex-row-reverse" : "");
-            
+
             let fileHtml = '';
             if (files && files.length > 0) {
-                fileHtml = `<div class="flex flex-wrap gap-1.5 mb-2">` + 
+                fileHtml = `<div class="flex flex-wrap gap-1.5 mb-2">` +
                     files.map(f => `<span class="px-2 py-1 bg-white/20 border border-current/20 rounded-md text-[11px] font-medium flex items-center gap-1 shadow-sm"><span class="text-xs">📎</span> ${f.name}</span>`).join('') +
                     `</div>`;
             }
 
             const formattedText = (text || '').replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
-            const bubbleClass = role === 'user' 
-                ? "bg-purple-600 text-white p-3.5 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm leading-relaxed" 
+            const bubbleClass = role === 'user'
+                ? "bg-purple-600 text-white p-3.5 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm leading-relaxed"
                 : "bg-slate-100 text-slate-800 p-3.5 rounded-2xl rounded-tl-none text-sm max-w-[85%] border border-slate-200/60 shadow-sm leading-relaxed";
-            
+
             const avatar = role === 'user'
                 ? `<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 shrink-0 text-sm shadow-sm border border-slate-300">👤</div>`
                 : `<div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shrink-0 text-sm shadow-sm border border-purple-200">🤖</div>`;
@@ -2822,10 +2844,10 @@
         }
 
         function removeLoading(id) {
-            const el = document.getElementById(id);
-            if(el) el.remove();
-        }
-    </script>
-</body>
-
-</html>
+                const el = document.getElementById(id);
+                if (el) el.remove();
+            }
+        </script>
+    </body>
+    
+    </html>
