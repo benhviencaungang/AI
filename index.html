@@ -1094,25 +1094,26 @@
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 2500);
+                // Gọi API lấy danh sách từ Database
                 const res = await fetch(`${baseApi}/speaker/list`, { signal: controller.signal });
                 clearTimeout(timeoutId);
 
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
 
-                if (data.speakers && data.speakers.length > 0) {
-                    const combined = [...data.speakers];
-                    localList.forEach(loc => {
-                        if (!combined.some(c => c.name.toLowerCase() === loc.name.toLowerCase())) {
-                            combined.push(loc);
-                        }
-                    });
-                    saveStoredSpeakers(combined);
-                    renderSpeakerCards(combined);
+                // FIX: Lấy Database làm gốc (Source of Truth). 
+                // Ghi đè hoàn toàn bộ nhớ tạm của trình duyệt bằng dữ liệu thật từ Server.
+                if (data.speakers) {
+                    saveStoredSpeakers(data.speakers); // Xóa sổ các mẫu cũ bị kẹt ở trình duyệt
+                    renderSpeakerCards(data.speakers);
                 } else {
-                    renderSpeakerCards(localList);
+                    // Nếu server trống, xóa sạch local luôn
+                    saveStoredSpeakers([]);
+                    renderSpeakerCards([]);
                 }
             } catch (err) {
+                // Chỉ dùng dữ liệu cũ của trình duyệt khi bị rớt mạng / mất kết nối Server
+                console.warn("Không kết nối được server, dùng tạm bộ nhớ cục bộ.");
                 renderSpeakerCards(localList);
             }
         }
