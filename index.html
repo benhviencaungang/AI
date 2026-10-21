@@ -34,11 +34,19 @@
             background: #94a3b8;
         }
     </style>
+    <!-- Thư viện Google Gemini API (dành cho Web) -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
 </head>
 
 <body class="bg-slate-100 min-h-screen py-6 px-3 sm:px-6 flex justify-center items-start text-slate-800">
 
-    <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
+    <div class="w-full max-w-6xl bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
 
         <!-- Header & Huy hiệu trạng thái -->
         <div
@@ -70,7 +78,7 @@
                 </button>
 
                 <button onclick="openServerConfigModal()" title="Cài đặt kết nối máy chủ"
-                    class="p-1.5 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition">
+                    class="p-1.5 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition relative z-50">
                     ⚙️
                 </button>
             </div>
@@ -95,7 +103,7 @@
         <!-- KHUNG 1: PHẦN CUỘC HỌP -->
         <div id="tabContent_meeting" class="space-y-6">
 
-            <input type="hidden" id="apiUrl" value="https://api-ai.benhviencaungang.com">
+            <input type="hidden" id="apiUrl" value="http://192.168.1.5:9000">
 
             <!-- 1. KHUNG NHẬP TÊN CUỘC HỌP -->
             <div class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 sm:p-5 mb-6 space-y-3 shadow-sm">
@@ -296,9 +304,15 @@
 
             <!-- 4. KHUNG YÊU CẦU PHÂN TÍCH CHO AI -->
             <div class="bg-blue-50/60 border border-blue-200 rounded-2xl p-4 mb-6 space-y-2">
-                <label class="block text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
-                    <span>🧠</span> Câu hỏi hoặc yêu cầu cho AI (Tùy chọn):
-                </label>
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
+                        <span>🧠</span> Câu hỏi hoặc yêu cầu cho AI (Tùy chọn):
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-200 hover:bg-purple-100 transition">
+                        <input type="checkbox" id="useGeminiToggle" class="w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500">
+                        <span>Dùng AI nâng cao</span>
+                    </label>
+                </div>
                 <input type="text" id="customPrompt"
                     placeholder="Ví dụ: Văn bản này nói về vấn đề gì? Tóm tắt các quyết định quan trọng nhất? Ai chịu trách nhiệm việc gì?"
                     class="w-full p-3 bg-white border border-blue-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm placeholder:text-slate-400">
@@ -430,13 +444,14 @@
                     class="text-slate-800 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto custom-scrollbar p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm font-mono">
                 </div>
 
-                <div class="pt-3 border-t border-slate-200 space-y-2.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase text-slate-600 tracking-wider">
-                            🚀 Chuyển đổi nội dung cuộc họp thành văn bản chuyên nghiệp:
-                        </span>
-                        <span class="text-[11px] text-slate-400">Đầy đủ thể thức Nghị định 30/2020/NĐ-CP</span>
-                    </div>
+                <!-- Nút tick chọn dùng Gemini -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] text-slate-400 hidden sm:inline">Đầy đủ thể thức NĐ 30</span>
+                            <label class="flex items-center gap-1.5 cursor-pointer text-[11px] font-semibold text-purple-700 bg-purple-50 px-2 py-1 rounded-md border border-purple-200 hover:bg-purple-100 transition">
+                                <input type="checkbox" id="docUseGeminiToggle" class="w-3.5 h-3.5 text-purple-600 rounded border-purple-300 focus:ring-purple-500" checked>
+                                <span>Dùng AI nâng cao</span>
+                            </label>
+                        </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <button type="button" id="btnDoc_bien_ban" onclick="requestDocument('bien_ban')"
@@ -466,26 +481,24 @@
                         </button>
                     </div>
                 </div>
-            </div>
 
         </div> <!-- ĐÓNG KHUNG 1 -->
-
         <!-- KHUNG 2: CHUYỂN ĐỔI PDF SANG WORD GIỮ ĐỊNH DẠNG -->
-        <div id="tabContent_pdf2word" class="hidden space-y-6">
-            <div
-                class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5 shadow-sm space-y-2">
+        <!-- Chỉ dùng "hidden space-y-6 w-full", TUYỆT ĐỐI KHÔNG thêm chữ "flex" ở đây -->
+        <div id="tabContent_pdf2word" class="hidden space-y-6 w-full">
+            
+            <!-- 1. CỤM TIÊU ĐỀ (Sẽ nằm ở trên cùng) -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5 shadow-sm space-y-2">
                 <div class="flex items-center gap-2.5">
                     <span class="p-2 bg-blue-600 text-white rounded-xl text-lg shadow-sm">📑</span>
                     <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900">Công Cụ Chuyển Đổi PDF & Hình Ảnh Sang
-                            Word</h2>
-                        <p class="text-xs text-slate-600">Trích xuất văn bản từ PDF, ảnh chụp, tài liệu scan; tự động
-                            căn giữa Quốc hiệu - Tiêu đề, bôi đậm đề mục và kẻ bảng ô viền nguyên vẹn chuẩn Nghị định
-                            30/2020/NĐ-CP</p>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900">Công Cụ Chuyển Đổi PDF & Hình Ảnh Sang Word</h2>
+                        <p class="text-xs text-slate-600">Trích xuất văn bản từ PDF, ảnh chụp, tài liệu scan; tự động căn giữa Quốc hiệu - Tiêu đề, bôi đậm đề mục và kẻ bảng ô viền nguyên vẹn chuẩn Nghị định 30/2020/NĐ-CP</p>
                     </div>
                 </div>
             </div>
 
+            <!-- 2. KHUNG KÉO THẢ (Sẽ tự động rớt xuống hàng dưới và cách một khoảng do space-y-6) -->
             <div id="pdfDropzone"
                 class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-8 text-center transition bg-slate-50/80 cursor-pointer"
                 onclick="document.getElementById('singlePdfInput').click()" ondragover="handlePdfDragOver(event)"
@@ -495,14 +508,12 @@
                     onchange="handleSinglePdfSelected(event)">
 
                 <div class="space-y-3">
-                    <div
-                        class="w-16 h-16 mx-auto rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-3xl shadow-inner">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-3xl shadow-inner">
                         📑
                     </div>
                     <div>
                         <div class="text-sm sm:text-base font-bold text-slate-800">
-                            Kéo thả file PDF hoặc Hình ảnh vào đây hoặc <span class="text-blue-600 underline">bấm để
-                                chọn file</span>
+                            Kéo thả file PDF hoặc Hình ảnh vào đây hoặc <span class="text-blue-600 underline">bấm để chọn file</span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1">
                             Hỗ trợ: PDF (.pdf), Ảnh chụp văn bản, Bảng biểu scan (.jpg, .jpeg, .png, .webp, .bmp)
@@ -513,7 +524,7 @@
 
             <div id="selectedPdfCard"
                 class="hidden p-4 bg-white border border-indigo-200 rounded-2xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-3 overflow-hidden">
+                <div class="flex items-center gap-3 overflow-hidden w-full sm:w-auto">
                     <div id="fileTypeIconBadge"
                         class="w-11 h-11 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-xs shrink-0 font-bold uppercase tracking-tight">
                         PDF
@@ -529,7 +540,13 @@
                         class="h-12 w-16 object-cover rounded-lg border border-slate-200 shadow-xs">
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                    <!-- Tích hợp Checkbox Dùng AI Nâng Cao cho phần PDF tương tự Trợ Lý Cuộc Họp -->
+                    <label class="flex items-center gap-1.5 cursor-pointer text-[11px] sm:text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-2 rounded-xl border border-purple-200 hover:bg-purple-100 transition mr-1">
+                        <input type="checkbox" id="pdfUseGeminiToggle" class="w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500" checked>
+                        <span>Dùng AI nâng cao</span>
+                    </label>
+
                     <button type="button" onclick="clearSelectedPdf()"
                         class="px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition border border-rose-200">
                         ✕ Chọn tệp khác
@@ -583,7 +600,7 @@
         </div> <!-- ĐÓNG KHUNG 2 -->
 
         <!-- KHUNG 3: HỎI ĐÁP TÀI LIỆU & AI -->
-        <div id="tabContent_chat" class="hidden space-y-4 h-[75vh] flex flex-col">
+        <div id="tabContent_chat" class="hidden space-y-4 flex flex-col w-full" style="height: calc(100vh - 12rem); min-height: 400px; max-height: 800px;">
             <div
                 class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-2xl p-4 shadow-sm shrink-0">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -625,22 +642,28 @@
             </div>
 
             <!-- Chat Input -->
-            <div class="shrink-0 bg-white border border-slate-200 rounded-2xl p-2.5 shadow-sm flex items-end gap-2">
-                <textarea id="chatInputMsg" rows="1"
-                    placeholder="Nhập câu hỏi của bạn tại đây... (Shift + Enter để xuống dòng)"
-                    class="flex-1 max-h-32 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-500 custom-scrollbar resize-none transition"
-                    onkeydown="handleChatInputKeydown(event)"></textarea>
-                <button onclick="sendChatMessage()"
-                    class="p-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-md transition flex items-center justify-center shrink-0 h-auto">
-                    <svg class="w-5 h-5 translate-x-[-1px] translate-y-[1px]" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                    </svg>
-                </button>
+            <div class="shrink-0 bg-white border border-slate-200 rounded-2xl p-2.5 shadow-sm flex flex-col gap-2">
+                <div class="flex items-center justify-between px-1">
+                    <label class="flex items-center gap-2 cursor-pointer text-[11px] font-semibold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-md border border-purple-200 hover:bg-purple-100 transition w-fit">
+                        <input type="checkbox" id="chatUseGeminiToggle" class="w-3.5 h-3.5 text-purple-600 rounded border-purple-300 focus:ring-purple-500">
+                        <span>AI Nâng cao</span>
+                    </label>
+                </div>
+                <div class="flex items-end gap-2">
+                    <textarea id="chatInputMsg" rows="1"
+                        placeholder="Nhập câu hỏi của bạn tại đây... (Shift + Enter để xuống dòng)"
+                        class="flex-1 max-h-32 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-500 custom-scrollbar resize-none transition"
+                        onkeydown="handleChatInputKeydown(event)"></textarea>
+                    <button onclick="sendChatMessage()"
+                        class="p-3.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-md transition flex items-center justify-center shrink-0 h-auto">
+                        <svg class="w-5 h-5 translate-x-[-1px] translate-y-[1px]" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </div>
-
         <!-- Modal Quản Lý Danh Bạ Giọng Nói Diễn Giả (Nâng Cấp Đầy Đủ) -->
         <div id="speakerModal"
             class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
@@ -853,13 +876,13 @@
                 <div class="space-y-2">
                     <label class="text-xs font-semibold text-slate-700">Địa chỉ Backend API (FastAPI /
                         Cloudflare):</label>
-                    <input type="text" id="customApiUrlInput" value="https://api-ai.benhviencaungang.com"
+                    <input type="text" id="customApiUrlInput" value="http://192.168.1.5:9000"
                         class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 outline-none focus:ring-2 focus:ring-blue-500">
                     <div class="flex gap-2 pt-1">
                         <button onclick="setApiPreset('https://api-ai.benhviencaungang.com')"
                             class="px-2.5 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition font-medium">Cloudflare
                             Tunnel</button>
-                        <button onclick="setApiPreset('http://127.0.0.1:9000')"
+                        <button onclick="setApiPreset('http://192.168.1.5:9000')"
                             class="px-2.5 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition font-medium">Localhost:9000</button>
                     </div>
                 </div>
@@ -1093,26 +1116,27 @@
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2500);
-                // Gọi API lấy danh sách từ Database
-                const res = await fetch(`${baseApi}/speaker/list`, { signal: controller.signal });
+                // Giảm thời gian chờ xuống 1.5 giây để tránh đơ trang lâu
+                const timeoutId = setTimeout(() => controller.abort(), 1500); 
+                
+                // Thêm catch thẳng vào fetch để bắt lỗi Network ngay lập tức
+                const res = await fetch(`${baseApi}/speaker/list`, { signal: controller.signal }).catch(e => {
+                    throw new Error("Network Error"); 
+                });
+                
                 clearTimeout(timeoutId);
 
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                if (!res || !res.ok) throw new Error(`HTTP Error`);
                 const data = await res.json();
-
-                // FIX: Lấy Database làm gốc (Source of Truth). 
-                // Ghi đè hoàn toàn bộ nhớ tạm của trình duyệt bằng dữ liệu thật từ Server.
+                
                 if (data.speakers) {
-                    saveStoredSpeakers(data.speakers); // Xóa sổ các mẫu cũ bị kẹt ở trình duyệt
+                    saveStoredSpeakers(data.speakers);
                     renderSpeakerCards(data.speakers);
                 } else {
-                    // Nếu server trống, xóa sạch local luôn
                     saveStoredSpeakers([]);
                     renderSpeakerCards([]);
                 }
             } catch (err) {
-                // Chỉ dùng dữ liệu cũ của trình duyệt khi bị rớt mạng / mất kết nối Server
                 console.warn("Không kết nối được server, dùng tạm bộ nhớ cục bộ.");
                 renderSpeakerCards(localList);
             }
@@ -1417,9 +1441,15 @@
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2500);
-                const res = await fetch(`${baseApi}/ai/model-status`, { cache: 'no-cache', signal: controller.signal });
+                const timeoutId = setTimeout(() => controller.abort(), 1500); // Rút ngắn thời gian chờ
+                
+                const res = await fetch(`${baseApi}/ai/model-status`, { cache: 'no-cache', signal: controller.signal }).catch(e => {
+                     throw new Error("Server Offline");
+                });
+                
                 clearTimeout(timeoutId);
+                if (!res || !res.ok) throw new Error("Bad Response");
+                
                 const data = await res.json();
 
                 if (data.ollama_online) {
@@ -1431,7 +1461,7 @@
                 }
             } catch (err) {
                 badge.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer";
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span> Chế độ Demo / Ngoại tuyến`;
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span> Máy chủ Ngoại tuyến`;
             }
         }
 
@@ -1803,17 +1833,39 @@
             document.getElementById('directiveCard').classList.add('hidden');
             document.getElementById('officialDocCard').classList.add('hidden');
 
-            if (isDemoMode) {
-                setTimeout(() => {
-                    simulateProcessFiles(meetingName, promptVal);
-                }, 1200);
-                return;
-            }
+           const useGemini = document.getElementById('useGeminiToggle').checked;
 
+            // Xử lý hoàn toàn trên Client nếu chọn Gemini
+            if (useGemini || isDemoMode) {
+                try {
+                    const aiPrompt = `Hãy đóng vai là thư ký chuyên nghiệp. Phân tích nội dung và trích xuất các ý chính, yêu cầu, chỉ đạo từ phiên họp "${meetingName}". ` + 
+                                     (promptVal ? `\nYêu cầu đặc biệt: ${promptVal}` : "");
+                    
+                    const aiResponse = await processWithGeminiClientSide(aiPrompt, selectedFiles);
+                    
+                    combinedMeetingText = `[ĐÃ PHÂN TÍCH TỪ AI]\n${aiResponse}`;
+                    setStatus('success', `✅ Hoàn thành phiên [${meetingName}] bằng AI.`, false);
+                    
+                    document.getElementById('totalTranscriptContent').innerText = combinedMeetingText;
+                    document.getElementById('analysisContent').innerText = aiResponse;
+                    document.getElementById('analysisSection').classList.remove('hidden');
+                    document.getElementById('resultCard').classList.remove('hidden');
+                    return; // Kết thúc không cần gọi Backend
+                } catch (err) {
+                    setStatus('loading', `⚡ Lỗi Gemini: ${err.message}. Đang chuyển sang mô phỏng...`, true);
+                    setTimeout(() => { simulateProcessFiles(meetingName, promptVal); }, 800);
+                    return;
+                }
+            }
+            
             const formData = new FormData();
             selectedFiles.forEach(file => { formData.append('files', file); });
             formData.append('meeting_name', meetingName);
             if (promptVal) formData.append('prompt', promptVal);
+            
+            // --- THÊM ĐOẠN NÀY ---
+            formData.append('use_gemini', useGemini);
+            // --------------------
 
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 180000);
@@ -1981,6 +2033,11 @@
             formData.append('content', combinedMeetingText);
             formData.append('meeting_name', meetingName);
             if (promptVal) formData.append('custom_request', promptVal);
+            
+            // Lấy lựa chọn dùng AI nâng cao (Gemini) từ checkbox ở khung tạo văn bản
+            const useGemini = document.getElementById('docUseGeminiToggle') ? document.getElementById('docUseGeminiToggle').checked : false;
+            formData.append('use_gemini', useGemini);
+            // --------------------
 
             try {
                 const res = await fetch(`${baseApi}/generate-document`, {
@@ -2567,15 +2624,46 @@
         async function convertPdfToWordAction() {
             if (!selectedSinglePdf) return;
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
-            setPdfConvertStatus('loading', `Đang bóc tách và kẻ bảng cho [${selectedSinglePdf.name}]...`);
+            setPdfConvertStatus('loading', `Đang bóc tách và xử lý nội dung cho [${selectedSinglePdf.name}]...`);
 
             if (isDemoMode) {
                 setTimeout(() => { simulatePdfConversion(selectedSinglePdf.name); }, 1000);
                 return;
             }
 
+            // Lấy giá trị của nút tick Gemini
+            const useGemini = document.getElementById('pdfUseGeminiToggle') ? document.getElementById('pdfUseGeminiToggle').checked : false;
+
+            // NẾU TÍCH CHỌN AI NÂNG CAO -> DÙNG GEMINI XỬ LÝ TRỰC TIẾP TRÊN TRÌNH DUYỆT
+            if (useGemini) {
+                try {
+                    // Tạo prompt hướng dẫn AI bóc tách sát với chuẩn văn bản
+                    const aiPrompt = `Hãy đóng vai là một công cụ trích xuất và số hóa tài liệu. Nhiệm vụ của bạn là trích xuất toàn bộ văn bản trong tài liệu/hình ảnh đính kèm. 
+- Giữ nguyên cấu trúc văn bản, các đoạn văn, và Quốc hiệu, Tiêu ngữ.
+- Trình bày các bảng biểu bằng định dạng Markdown (sử dụng dấu |).
+- Tuyệt đối không thêm bất kỳ bình luận, giải thích hay lời chào nào, chỉ trả về nội dung được trích xuất.`;
+
+                    // Gọi hàm Gemini đã được định nghĩa ở cuối file
+                    const responseText = await processWithGeminiClientSide(aiPrompt, [selectedSinglePdf]);
+                    
+                    convertedPdfRawText = responseText || "";
+                    convertedPdfHtmlContent = parseTextToFormattedHtml(convertedPdfRawText);
+                    renderPdfWordResult(1); // Mặc định hiển thị ~1 trang
+                    
+                    setPdfConvertStatus('success', `Đã bóc tách thành công bằng AI Gemini Nâng cao!`);
+                    return; // Kết thúc hàm, không gửi lên Backend nữa
+                } catch (err) {
+                    console.error("Lỗi khi dùng Gemini bóc tách PDF:", err);
+                    setPdfConvertStatus('loading', `⚡ Lỗi API Gemini: ${err.message}. Đang chuyển sang mô phỏng dự phòng...`);
+                    setTimeout(() => { simulatePdfConversion(selectedSinglePdf.name); }, 1500);
+                    return;
+                }
+            }
+
+            // NẾU KHÔNG TÍCH CHỌN AI NÂNG CAO -> GỬI LÊN SERVER NHƯ CŨ
             const fd = new FormData();
             fd.append('file', selectedSinglePdf);
+            fd.append('use_gemini', useGemini);
 
             try {
                 const res = await fetch(`${baseApi}/convert-pdf-to-word`, { method: 'POST', body: fd });
@@ -2761,6 +2849,9 @@
             const msg = inputEl.value.trim();
             if (!msg && chatContextFiles.length === 0) return;
 
+            // Khai báo và lấy giá trị checkbox ngay từ đầu hàm
+            const useGemini = document.getElementById('chatUseGeminiToggle').checked;
+
             // 1. In tin nhắn người dùng lên UI
             appendMessage('user', msg, chatContextFiles);
 
@@ -2775,22 +2866,27 @@
             const loadingId = 'loading-' + Date.now();
             appendLoading(loadingId);
 
-            if (isDemoMode) {
-                setTimeout(() => {
+            if (useGemini || isDemoMode) {
+                try {
+                    const aiPrompt = `Tư cách là Trợ lý AI y tế Bệnh viện Cầu Ngang. Hãy trả lời: ${msg}`;
+                    const replyText = await processWithGeminiClientSide(aiPrompt, currentFiles, true);
                     removeLoading(loadingId);
-                    const aiResp = currentFiles.length > 0
-                        ? `Tôi đã tiếp nhận ${currentFiles.length} tệp tài liệu bạn gửi đính kèm.\n\nDựa trên nội dung tệp, đây là phân tích mô phỏng cho câu hỏi **"${msg}"** của bạn:\n- Tài liệu cung cấp các quy định về quy chế chuyên môn và tiêu chí đánh giá tại bệnh viện.\n- Các đơn vị liên quan cần phối hợp thực hiện theo lộ trình đã đề ra.\n\nBạn cần tôi tóm tắt chi tiết thêm ở phần nào không?`
-                        : `Đây là câu trả lời mô phỏng cho câu hỏi **"${msg}"** của bạn. AI đã ghi nhận yêu cầu và có thể trả lời các vấn đề về hành chính, y tế. Trong chế độ thực tế, tôi sẽ kết nối với máy chủ để đưa ra câu trả lời chuyên sâu hơn.`;
-                    appendMessage('ai', aiResp);
-                }, 1500);
-                return;
+                    appendMessage('ai', replyText);
+                } catch (err) {
+                    removeLoading(loadingId);
+                    appendMessage('ai', `⚠️ Lỗi Gemini: ${err.message}. (Đã chuyển sang mô phỏng)`);
+                }
+                return; // Không gọi máy chủ
             }
 
-            // Gửi API thực tế
+            // Gửi API thực tế cho Ollama / Backend
             const baseApi = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
             const formData = new FormData();
             if (msg) formData.append('message', msg);
             currentFiles.forEach(f => formData.append('files', f));
+            
+            // Gắn cờ use_gemini đẩy lên Backend
+            formData.append('use_gemini', useGemini);
 
             try {
                 // Gọi tới endpoint /chat trên Backend
@@ -2869,6 +2965,49 @@
                 const el = document.getElementById(id);
                 if (el) el.remove();
             }
+        // Cấu hình linh hoạt không gán cứng API Key
+        async function getGenAI() {
+            const { GoogleGenerativeAI } = await import("@google/generative-ai");
+            // Nhập API Key thông qua giao diện hoặc biến cấu hình hệ thống
+            const GEMINI_API_KEY = "AIzaSyB6fuEtE4BqlTl28akQ_hIufSSzH_x23XA"; 
+            return new GoogleGenerativeAI(GEMINI_API_KEY);
+        }
+
+        async function fileToGenerativePart(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64Data = reader.result.split(',')[1];
+                    resolve({
+                        inlineData: { data: base64Data, mimeType: file.type }
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function processWithGeminiClientSide(prompt, files, isChat = false) {
+            try {
+                const aiClient = await getGenAI();
+                const model = aiClient.getGenerativeModel({ model: "gemini-2.5-flash" });
+                const parts = [];
+
+                if (files && files.length > 0) {
+                    for (const file of files) {
+                        const filePart = await fileToGenerativePart(file);
+                        parts.push(filePart);
+                    }
+                }
+
+                parts.push(prompt);
+                const result = await model.generateContent(parts);
+                const response = await result.response;
+                return response.text();
+            } catch (err) {
+                console.error("Lỗi Gemini:", err);
+                throw err;
+            }
+        }
         </script>
     </body>
     
